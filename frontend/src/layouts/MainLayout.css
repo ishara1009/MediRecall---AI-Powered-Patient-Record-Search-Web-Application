@@ -1,0 +1,30 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-body {
+  flex: 1;
+  display: flex;
+  margin-top: var(--navbar-height);
+}
+
+.layout-body.with-sidebar {
+  /* sidebar is fixed, so no margin needed */
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px 32px;
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+}
+
+.main-content.chat-main {
+  margin-left: var(--sidebar-width);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+}

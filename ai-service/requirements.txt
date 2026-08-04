@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+langchain
+langchain-openai
+langchain-community
+langchain-chroma
+chromadb
+pymupdf
+pydantic
+openai
+pytest
+rank_bm25
