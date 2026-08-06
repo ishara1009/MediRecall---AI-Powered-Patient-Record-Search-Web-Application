@@ -23,6 +23,7 @@
   --accent-green: #10b981;
   --accent-error: #ef4444;
   --accent-amber: #f59e0b;
+  --text-gold: #f59e0b;
   
   /* Layout specifications */
   --sidebar-width: 250px;
@@ -101,7 +102,12 @@ code {
 }
 
 .glass-interactive {
-  composes: glass;
+  background: var(--bg-card);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   transition: var(--transition);
 }
 
@@ -177,3 +183,36 @@ code {
 .fade-in {
   animation: fadeIn 0.4s ease forwards;
 }
+
+/* Loading spinner utility */
+.loading-spinner {
+  color: var(--text-indigo);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-spinner::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: block;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Text utilities */
+.text-dim { color: var(--text-dim); }
+.text-muted { color: var(--text-muted); }
+.table-mono { font-family: 'Courier New', monospace; font-size: 13px; }
+.empty-state-text { text-align: center; color: var(--text-muted); padding: 20px; font-size: 13px; }

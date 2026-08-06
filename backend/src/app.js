@@ -5,6 +5,9 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const doctorRoutes = require('./routes/doctorRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -12,8 +15,17 @@ const app = express();
 // Use request logging
 app.use(morgan('dev'));
 
-// Configure CORS
-app.use(cors());
+// Configure CORS — allow frontend origin
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // Parse incoming payloads
 app.use(express.json());
@@ -23,6 +35,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // Map API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/doctor', doctorRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', documentRoutes);

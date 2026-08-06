@@ -4,17 +4,21 @@ import './App.css';
 import MainLayout from './layouts/MainLayout';
 import AppRoutes from './routes/AppRoutes';
 import { ChatProvider } from './context/ChatContext';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
     <Router>
-      <ChatProvider>
-        <MainLayout>
-          <AppRoutes />
-        </MainLayout>
-      </ChatProvider>
+      <AuthProvider>
+        <ChatProvider>
+          <MainLayout>
+            <AppRoutes />
+          </MainLayout>
+        </ChatProvider>
+      </AuthProvider>
     </Router>
   );
 }
 
 export default App;
+

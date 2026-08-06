@@ -2,9 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const chatController = require('../controllers/chatController');
+const { protect, authorize } = require('../middleware/auth');
 
 router.post(
   '/chat',
+  protect,
+  authorize('Doctor'),
   [
     body('question')
       .trim()
@@ -16,3 +19,4 @@ router.post(
 );
 
 module.exports = router;
+

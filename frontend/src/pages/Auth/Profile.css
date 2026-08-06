@@ -1,0 +1,166 @@
+.profile-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .profile-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-side {
+  padding: 30px;
+}
+
+.section-head {
+  margin-bottom: 24px;
+}
+
+.section-head h3 {
+  font-size: 18px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.section-head p {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.profile-alert {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.profile-alert.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--accent-error);
+}
+
+.profile-alert.success {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--accent-green);
+}
+
+.profile-form, .pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Avatar row */
+.profile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.profile-pic-container {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+}
+
+.profile-pic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-pic-initials {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Outfit', sans-serif;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.avatar-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  align-self: flex-start;
+  border-radius: var(--radius-sm);
+}
+
+.avatar-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* Form Styles */
+.profile-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.disabled-input {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.01) !important;
+  color: var(--text-muted) !important;
+}
+
+.inline-group {
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.inline-group label {
+  min-width: 120px;
+}
+
+.inline-group input {
+  max-width: 250px;
+  flex: 1;
+  padding: 8px 12px !important;
+}
+
+.profile-divider {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 10px 0;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
+.profile-save-btn, .password-save-btn {
+  width: 100%;
+}

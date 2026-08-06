@@ -1,0 +1,192 @@
+.system-logs-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.logs-header h1 {
+  font-size: 26px;
+  color: var(--text-main);
+}
+
+.filters-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.action-select-filter {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.search-logs-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  min-width: 250px;
+}
+
+.search-logs-input:focus, .action-select-filter:focus {
+  border-color: var(--border-glow);
+}
+
+.refresh-btn {
+  padding: 10px 16px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+.logs-alert {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.logs-alert.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--accent-error);
+}
+
+/* Audit Logs Table styling */
+.audit-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.audit-logs-table th {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-indigo);
+  padding: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.audit-logs-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.audit-logs-table tr {
+  transition: var(--transition);
+}
+
+.audit-logs-table tr:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* cells formatting */
+.date-time-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.cell-date {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.cell-time {
+  font-size: 11px;
+}
+
+.cell-details {
+  color: var(--text-main);
+  max-width: 400px;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+.actor-cell-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.actor-cell-name {
+  font-weight: 700;
+}
+
+.actor-cell-role {
+  font-size: 11px;
+}
+
+/* Action operation badges */
+.action-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* login success */
+.action-badge.login_success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent-green);
+}
+
+/* setup and creations */
+.action-badge.setup_admin,
+.action-badge.create_doctor {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--text-indigo);
+}
+
+/* deactivation and deletions */
+.action-badge.deactivated_doctor,
+.action-badge.delete_doctor {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--accent-error);
+}
+
+/* details profile / updates */
+.action-badge.profile_update,
+.action-badge.update_doctor,
+.action-badge.password_changed,
+.action-badge.password_reset_self {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--text-gold);
+}
+
+/* fallback default */
+.action-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}

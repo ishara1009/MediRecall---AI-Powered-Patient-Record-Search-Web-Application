@@ -1,0 +1,318 @@
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { updateProfile, changePassword } from '../../api/api';
+import './Profile.css';
+
+export default function Profile() {
+  const { user, syncProfile } = useContext(AuthContext);
+
+  // Profile data states
+  const [profileData, setProfileData] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: ''
+  });
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Password data states
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  });
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+
+  // Populate data on mount/user change
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phoneNumber: user.phoneNumber || ''
+      });
+      setPreviewUrl(user.profilePicture ? `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}${user.profilePicture}` : '');
+    }
+  }, [user]);
+
+  // Profile fields handler
+  const handleProfileChange = (e) => {
+    setProfileData({ ...profileData, [e.target.name]: e.target.value });
+    setProfileError('');
+  };
+
+  // Avatar file upload handler
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePicture(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setProfileError('');
+    }
+  };
+
+  // Profile submission handler
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setProfileError('');
+    setProfileSuccess('');
+    setProfileLoading(true);
+
+    if (!profileData.fullName || !profileData.email || !profileData.phoneNumber) {
+      setProfileError('Name, Email and Phone Number are required fields.');
+      setProfileLoading(false);
+      return;
+    }
+
+    try {
+      const data = new FormData();
+      data.append('fullName', profileData.fullName.trim());
+      data.append('email', profileData.email.trim());
+      data.append('phoneNumber', profileData.phoneNumber.trim());
+      if (profilePicture) {
+        data.append('profilePicture', profilePicture);
+      }
+
+      const res = await updateProfile(data);
+
+      if (res.success && res.data) {
+        setProfileSuccess('Profile updated successfully!');
+        syncProfile(res.data);
+      } else {
+        setProfileError(res.message || 'Failed to update profile details.');
+      }
+    } catch (err) {
+      setProfileError(err.response?.data?.message || err.message || 'An error occurred.');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  // Password fields handler
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+    setPwError('');
+  };
+
+  // Password password submission handler
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPwError('');
+    setPwSuccess('');
+    setPwLoading(true);
+
+    const { currentPassword, newPassword, confirmNewPassword } = passwordData;
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPwError('Please fill in all security fields.');
+      setPwLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPwError('New passwords do not match.');
+      setPwLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPwError('New password must be at least 8 characters long.');
+      setPwLoading(false);
+      return;
+    }
+
+    try {
+      const res = await changePassword(currentPassword, newPassword, confirmNewPassword);
+
+      if (res.success) {
+        setPwSuccess('Password changed successfully!');
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmNewPassword: ''
+        });
+      } else {
+        setPwError(res.message || 'Failed to update password.');
+      }
+    } catch (err) {
+      setPwError(err.response?.data?.message || err.message || 'An error occurred.');
+    } finally {
+      setPwLoading(false);
+    }
+  };
+
+  return (
+    <div className="profile-container fade-in">
+      <div className="profile-grid-layout">
+        
+        {/* Profile details form */}
+        <section className="profile-side glass">
+          <div className="section-head">
+            <h3>Profile Settings</h3>
+            <p>Update your personal information and profile picture</p>
+          </div>
+
+          {profileError && <div className="profile-alert error">{profileError}</div>}
+          {profileSuccess && <div className="profile-alert success">{profileSuccess}</div>}
+
+          <form onSubmit={handleProfileSubmit} className="profile-form">
+            <div className="profile-avatar-row">
+              <div className="profile-pic-container">
+                {previewUrl ? (
+                  <img src={previewUrl} alt="User Avatar" className="profile-pic-img" />
+                ) : (
+                  <div className="profile-pic-initials">
+                    {user?.fullName?.substring(0, 2).toUpperCase() || 'U'}
+                  </div>
+                )}
+              </div>
+              <div className="avatar-actions">
+                <label htmlFor="avatar-file" className="btn-secondary avatar-btn">
+                  Upload New Photo
+                </label>
+                <input
+                  type="file"
+                  id="avatar-file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                <span className="avatar-hint">JPG, PNG, WEBP. Max 5MB.</span>
+              </div>
+            </div>
+
+            <div className="profile-inputs">
+              <div className="form-group inline-group">
+                <label>System Role</label>
+                <input type="text" value={user?.role || ''} disabled className="disabled-input" />
+              </div>
+
+              <div className="form-group inline-group">
+                <label>Employee ID</label>
+                <input type="text" value={user?.employeeId || ''} disabled className="disabled-input" />
+              </div>
+
+              {user?.role === 'Doctor' && (
+                <>
+                  <div className="form-group inline-group">
+                    <label>Medical License</label>
+                    <input type="text" value={user?.medicalLicenseNumber || ''} disabled className="disabled-input" />
+                  </div>
+                  <div className="form-group inline-group">
+                    <label>Assigned Department</label>
+                    <input type="text" value={user?.department || ''} disabled className="disabled-input" />
+                  </div>
+                </>
+              )}
+
+              <hr className="profile-divider" />
+
+              <div className="form-group">
+                <label htmlFor="fullName">Full Name</label>
+                <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={profileData.fullName}
+                  onChange={handleProfileChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={profileData.email}
+                  onChange={handleProfileChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={profileData.phoneNumber}
+                  onChange={handleProfileChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="btn-primary profile-save-btn" disabled={profileLoading}>
+              {profileLoading ? 'Saving...' : 'Save Profile Details'}
+            </button>
+          </form>
+        </section>
+
+        {/* Change password form */}
+        <section className="profile-side glass">
+          <div className="section-head">
+            <h3>Change Password</h3>
+            <p>Ensure your account is using a secure, complex password policy</p>
+          </div>
+
+          {pwError && <div className="profile-alert error">{pwError}</div>}
+          {pwSuccess && <div className="profile-alert success">{pwSuccess}</div>}
+
+          <form onSubmit={handlePasswordSubmit} className="pw-form">
+            <div className="form-group">
+              <label htmlFor="currentPassword">Current Password</label>
+              <input
+                type="password"
+                id="currentPassword"
+                name="currentPassword"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="newPassword">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                required
+              />
+              <span className="field-hint">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol</span>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmNewPassword">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmNewPassword"
+                name="confirmNewPassword"
+                value={passwordData.confirmNewPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn-primary password-save-btn" disabled={pwLoading}>
+              {pwLoading ? 'Changing...' : 'Update Session Password'}
+            </button>
+          </form>
+        </section>
+
+      </div>
+    </div>
+  );
+}

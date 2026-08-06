@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const documentController = require('../controllers/documentController');
+const { protect, authorize } = require('../middleware/auth');
 
-// List metadata
-router.get('/documents', documentController.getDocuments);
+// List metadata (shared by Administrator and Doctor)
+router.get('/documents', protect, authorize(['Admin', 'Doctor']), documentController.getDocuments);
 
-// Delete metadata + index
-router.delete('/documents/:id', documentController.deleteDocument);
+// Delete metadata + index (Admin only)
+router.delete('/documents/:id', protect, authorize('Admin'), documentController.deleteDocument);
 
-// Rebuild index for single doc
-router.post('/documents/:id/rebuild', documentController.rebuildDocumentEmbeddings);
+// Rebuild index for single doc (Admin only)
+router.post('/documents/:id/rebuild', protect, authorize('Admin'), documentController.rebuildDocumentEmbeddings);
 
-// Rebuild index for all docs
-router.post('/documents/rebuild-all', documentController.rebuildAllEmbeddings);
+// Rebuild index for all docs (Admin only)
+router.post('/documents/rebuild-all', protect, authorize('Admin'), documentController.rebuildAllEmbeddings);
 
 module.exports = router;
