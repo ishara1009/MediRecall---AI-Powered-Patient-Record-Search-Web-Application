@@ -5,9 +5,16 @@ import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import './MainLayout.css';
 
+const AUTH_ROUTES = ['/login', '/setup', '/forgot-password'];
+
 export default function MainLayout({ children }) {
   const location = useLocation();
   const isChatPage = location.pathname === '/chat';
+  const isAuthPage = AUTH_ROUTES.includes(location.pathname);
+
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="main-layout">
