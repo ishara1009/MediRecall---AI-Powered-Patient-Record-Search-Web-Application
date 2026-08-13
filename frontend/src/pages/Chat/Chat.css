@@ -21,6 +21,39 @@
   gap: 10px;
 }
 
+.chat-document-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.chat-document-picker select {
+  max-width: 300px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text-main);
+  font: inherit;
+}
+
+.document-required-message {
+  margin: 0 0 8px;
+  color: var(--accent-amber);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .chat-toolbar { flex-wrap: wrap; gap: 10px; }
+  .chat-document-picker { order: 3; width: 100%; margin: 0; }
+  .chat-document-picker select { flex: 1; min-width: 0; }
+}
+
 .chat-title {
   font-size: 15px;
   font-weight: 700;

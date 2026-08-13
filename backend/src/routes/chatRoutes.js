@@ -13,10 +13,14 @@ router.post(
       .trim()
       .notEmpty()
       .withMessage('Question query text is required')
+      .isString(),
+    body('documentId')
+      .trim()
+      .notEmpty()
+      .withMessage('A PDF document must be selected')
       .isString()
   ],
   chatController.queryChat
 );
 
 module.exports = router;
-

@@ -13,7 +13,7 @@ def chat_query(request: ChatRequest):
     """
     logger.info(f"Received chat RAG query request: '{request.question}'")
     try:
-        response_data = query_rag_pipeline(request.question)
+        response_data = query_rag_pipeline(request.question, request.document_id)
         return response_data
     except Exception as e:
         logger.error(f"Chat pipeline endpoint execution failed: {str(e)}")

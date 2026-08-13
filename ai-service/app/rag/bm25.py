@@ -51,22 +51,26 @@ class BM25Index:
         tokenized = [self._tokenize(d.get("text", "")) for d in self.docs]
         self.bm25 = BM25Okapi(tokenized) if tokenized else None
 
-    def query(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def query(self, query: str, top_k: int = 5, document_id: str = None) -> List[Dict[str, Any]]:
         """Return top_k matching docs with BM25 scores."""
         if not self.bm25:
             return []
         tokens = self._tokenize(query)
         scores = self.bm25.get_scores(tokens)
-        ranked = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)[:top_k]
+        ranked = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
         results = []
         for idx, score in ranked:
             doc = self.docs[idx]
+            if document_id and doc.get("metadata", {}).get("document_id") != document_id:
+                continue
             results.append({
                 "id": doc.get("id"),
                 "score": float(score),
                 "text": doc.get("text"),
                 "metadata": doc.get("metadata", {}),
             })
+            if len(results) >= top_k:
+                break
         return results
 
     def _tokenize(self, text: str) -> List[str]:

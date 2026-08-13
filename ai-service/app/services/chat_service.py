@@ -2,7 +2,7 @@ from app.rag.retriever import retrieve_relevant_contexts
 from app.rag.chain import get_rag_chain
 from app.utils.logger import logger
 
-def query_rag_pipeline(question: str) -> dict:
+def query_rag_pipeline(question: str, document_id: str) -> dict:
     """
     Search related chunks inside ChromaDB vector store, execute RAG Chain, 
     and output structured citations and answers.
@@ -12,7 +12,7 @@ def query_rag_pipeline(question: str) -> dict:
         
         # 1. Retrieve matching contexts
         # Retrieve top 5 matching blocks
-        retrieved_docs = retrieve_relevant_contexts(question, k=5)
+        retrieved_docs = retrieve_relevant_contexts(question, k=5, document_id=document_id)
         
         if not retrieved_docs:
             logger.info("No documents found in vectorstore. Custom fallback triggered.")

@@ -9,13 +9,13 @@ const queryChat = async (req, res, next) => {
     return sendError(res, 'Validation failed', 400, errors.array());
   }
 
-  const { question } = req.body;
+  const { question, documentId } = req.body;
 
   try {
     logger.info(`Sending question to AI RAG service: "${question}"`);
     
     // Call AI Service /chat
-    const result = await aiService.queryChat(question);
+    const result = await aiService.queryChat(question, documentId);
     
     // Express returns success response
     return sendSuccess(res, result, 'Answer generated successfully');

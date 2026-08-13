@@ -7,7 +7,6 @@
 .layout-body {
   flex: 1;
   display: flex;
-  margin-top: var(--navbar-height);
 }
 
 .layout-body.with-sidebar {

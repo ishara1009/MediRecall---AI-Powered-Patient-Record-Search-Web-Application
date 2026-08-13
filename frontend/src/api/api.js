@@ -221,8 +221,8 @@ export const uploadDocuments = async (files, onUploadProgress) => {
 };
 
 // Query RAG chain (Doctor only)
-export const sendChatMessage = async (question) => {
-  const response = await apiClient.post('/chat', { question });
+export const sendChatMessage = async (question, documentId) => {
+  const response = await apiClient.post('/chat', { question, documentId });
   return response.data;
 };
 

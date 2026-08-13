@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDocuments, logSearchQuery } from '../../api/api';
 import './PatientRecordSearch.css';
 
 export default function PatientRecordSearch() {
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [searchWord, setSearchWord] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
@@ -59,6 +61,17 @@ export default function PatientRecordSearch() {
     setFilteredDocuments(documents);
   };
 
+  const handleSelectDocument = (event, doc) => {
+    event.stopPropagation();
+    setSelectedDoc(doc);
+  };
+
+  const openSelectedChat = () => {
+    navigate('/doctor/chat', {
+      state: { documentId: selectedDoc.customId, filename: selectedDoc.filename }
+    });
+  };
+
   return (
     <div className="record-search-container fade-in">
       <div className="search-header">
@@ -110,7 +123,7 @@ export default function PatientRecordSearch() {
           {filteredDocuments.map((doc) => (
             <div
               key={doc._id}
-              className="record-card glass glass-interactive"
+              className={`record-card glass glass-interactive ${selectedDoc?._id === doc._id ? 'record-card-selected' : ''}`}
               onClick={() => setSelectedDoc(doc)}
             >
               <div className="card-top-row">
@@ -127,6 +140,13 @@ export default function PatientRecordSearch() {
                   </span>
                 )}
               </div>
+              <button
+                type="button"
+                className="select-record-btn"
+                onClick={(event) => handleSelectDocument(event, doc)}
+              >
+                {selectedDoc?._id === doc._id ? 'Selected PDF' : 'Select PDF'}
+              </button>
             </div>
           ))}
         </div>
@@ -178,6 +198,9 @@ export default function PatientRecordSearch() {
             </div>
 
             <div className="modal-actions">
+              <button onClick={openSelectedChat} className="btn-primary">
+                AI Chat with This PDF
+              </button>
               <button onClick={() => setSelectedDoc(null)} className="btn-primary">
                 Close Record Profile
               </button>

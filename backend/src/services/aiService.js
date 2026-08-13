@@ -53,9 +53,9 @@ class AIService {
    * Query the RAG QA chain.
    * @param {string} question Question query
    */
-  async queryChat(question) {
+  async queryChat(question, documentId) {
     try {
-      const response = await axios.post(`${AI_SERVICE_URL}/chat`, { question });
+      const response = await axios.post(`${AI_SERVICE_URL}/chat`, { question, document_id: documentId });
       return response.data;
     } catch (error) {
       logger.error(`AI Service chat query failed`, error.message);

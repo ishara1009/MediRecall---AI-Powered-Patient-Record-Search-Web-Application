@@ -1,20 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ChatContext } from '../../context/ChatContext';
-import { sendChatMessage } from '../../api/api';
+import { getDocuments, sendChatMessage } from '../../api/api';
 import ChatBox from '../../components/ChatBox';
 import PromptInput from '../../components/PromptInput';
 import './Chat.css';
 
 export default function Chat() {
+  const location = useLocation();
   const { messages, setMessages } = useContext(ChatContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [documentId, setDocumentId] = useState(location.state?.documentId || '');
+
+  useEffect(() => {
+    getDocuments()
+      .then((res) => setDocuments(res.data || []))
+      .catch(() => setDocuments([]));
+  }, []);
 
   const handleSend = async (question) => {
+    if (!documentId) return;
     // Add user message immediately
     setMessages(prev => [...prev, { role: 'user', content: question }]);
     setIsLoading(true);
     try {
-      const res = await sendChatMessage(question);
+      const res = await sendChatMessage(question, documentId);
       const data = res.data;
       setMessages(prev => [...prev, { role: 'assistant', data }]);
     } catch (err) {
@@ -42,6 +53,15 @@ export default function Chat() {
           <span className="chat-title">AI Research Chat</span>
           <span className="chat-count">{messages.length > 0 ? `${Math.floor(messages.length / 2)} question(s)` : 'Ready'}</span>
         </div>
+        <label className="chat-document-picker">
+          <span>Selected PDF</span>
+          <select value={documentId} onChange={(e) => { setDocumentId(e.target.value); clearChat(); }} disabled={isLoading}>
+            <option value="">Choose a patient record</option>
+            {documents.map((doc) => (
+              <option key={doc._id} value={doc.customId}>{doc.filename}</option>
+            ))}
+          </select>
+        </label>
         <button
           id="clear-chat-btn"
           className="clear-chat-btn"
@@ -55,7 +75,8 @@ export default function Chat() {
       <ChatBox messages={messages} isLoading={isLoading} />
 
       <div className="chat-input-area">
-        <PromptInput onSend={handleSend} isLoading={isLoading} />
+        {!documentId && <p className="document-required-message">Select a PDF before asking the AI a question.</p>}
+        <PromptInput onSend={handleSend} isLoading={isLoading || !documentId} />
       </div>
     </div>
   );
