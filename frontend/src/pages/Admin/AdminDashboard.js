@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getAdminStats, getSystemLogs, checkHealth } from '../../api/api';
+import { getAdminStats, getSystemLogs } from '../../api/api';
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
@@ -12,7 +12,6 @@ export default function AdminDashboard() {
   });
 
   const [logs, setLogs] = useState([]);
-  const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
@@ -23,8 +22,6 @@ export default function AdminDashboard() {
       const logsRes = await getSystemLogs();
       if (logsRes.success) setLogs(logsRes.data.slice(0, 5)); // recent 5 logs
 
-      const healthRes = await checkHealth();
-      setHealth(healthRes.data);
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err.message);
     } finally {
@@ -34,10 +31,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-    
-    // Interval check every 30 seconds
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -166,24 +159,6 @@ export default function AdminDashboard() {
         </section>
       </div>
 
-      {/* Health Status check section */}
-      {health && (
-        <section className="health-section glass">
-          <h3>Services Health Monitor</h3>
-          <div className="health-grid">
-            {Object.entries(health.services || {}).map(([svc, info]) => (
-              <div key={svc} className="health-row">
-                <span className={`health-indicator-dot ${info.status === 'healthy' ? 'green' : 'red'}`}></span>
-                <span className="health-service-name">{svc.toUpperCase()}</span>
-                <span className={`health-status-text ${info.status === 'healthy' ? 'ok' : 'err'}`}>
-                  {info.status === 'healthy' ? 'Operational' : 'Failed'}
-                </span>
-                <span className="health-latency text-muted">{info.latency || 'N/A'}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import './PromptInput.css';
 
-export default function PromptInput({ onSend, isLoading }) {
+export default function PromptInput({ onSend, isLoading, disabled = false }) {
   const [text, setText] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || disabled) return;
     onSend(text.trim());
     setText('');
   };
@@ -29,13 +29,13 @@ export default function PromptInput({ onSend, isLoading }) {
           onKeyDown={handleKeyDown}
           placeholder="Ask a question about your research papers..."
           rows={1}
-          disabled={isLoading}
+          disabled={isLoading || disabled}
         />
         <button
           id="chat-send-btn"
           type="submit"
           className="prompt-send-btn"
-          disabled={!text.trim() || isLoading}
+          disabled={!text.trim() || isLoading || disabled}
         >
           {isLoading ? (
             <span className="send-spinner"></span>

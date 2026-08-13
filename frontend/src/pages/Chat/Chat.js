@@ -11,7 +11,7 @@ export default function Chat() {
   const { messages, setMessages } = useContext(ChatContext);
   const [isLoading, setIsLoading] = useState(false);
   const [documents, setDocuments] = useState([]);
-  const [documentId, setDocumentId] = useState(location.state?.documentId || '');
+  const [documentId, setDocumentId] = useState(location.state?.documentId || 'all');
 
   useEffect(() => {
     getDocuments()
@@ -20,7 +20,6 @@ export default function Chat() {
   }, []);
 
   const handleSend = async (question) => {
-    if (!documentId) return;
     // Add user message immediately
     setMessages(prev => [...prev, { role: 'user', content: question }]);
     setIsLoading(true);
@@ -54,9 +53,9 @@ export default function Chat() {
           <span className="chat-count">{messages.length > 0 ? `${Math.floor(messages.length / 2)} question(s)` : 'Ready'}</span>
         </div>
         <label className="chat-document-picker">
-          <span>Selected PDF</span>
+          <span>Chat scope</span>
           <select value={documentId} onChange={(e) => { setDocumentId(e.target.value); clearChat(); }} disabled={isLoading}>
-            <option value="">Choose a patient record</option>
+            <option value="all">All uploaded PDFs</option>
             {documents.map((doc) => (
               <option key={doc._id} value={doc.customId}>{doc.filename}</option>
             ))}
@@ -75,8 +74,7 @@ export default function Chat() {
       <ChatBox messages={messages} isLoading={isLoading} />
 
       <div className="chat-input-area">
-        {!documentId && <p className="document-required-message">Select a PDF before asking the AI a question.</p>}
-        <PromptInput onSend={handleSend} isLoading={isLoading || !documentId} />
+        <PromptInput onSend={handleSend} isLoading={isLoading} />
       </div>
     </div>
   );

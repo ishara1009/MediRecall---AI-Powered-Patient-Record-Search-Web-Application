@@ -55,7 +55,10 @@ class AIService {
    */
   async queryChat(question, documentId) {
     try {
-      const response = await axios.post(`${AI_SERVICE_URL}/chat`, { question, document_id: documentId });
+      const response = await axios.post(`${AI_SERVICE_URL}/chat`, {
+        question,
+        document_id: documentId || null
+      });
       return response.data;
     } catch (error) {
       logger.error(`AI Service chat query failed`, error.message);

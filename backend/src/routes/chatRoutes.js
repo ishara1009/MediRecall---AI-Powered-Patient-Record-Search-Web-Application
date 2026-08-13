@@ -15,9 +15,10 @@ router.post(
       .withMessage('Question query text is required')
       .isString(),
     body('documentId')
+      .optional({ nullable: true })
       .trim()
       .notEmpty()
-      .withMessage('A PDF document must be selected')
+      .withMessage('Document ID cannot be empty')
       .isString()
   ],
   chatController.queryChat
