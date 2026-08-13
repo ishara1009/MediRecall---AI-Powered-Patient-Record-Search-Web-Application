@@ -7,7 +7,7 @@ export default function SourceCard({ sources }) {
   return (
     <div className="source-card">
       <div className="source-card-header">
-        <span className="source-title">Source Documents</span>
+          <span className="source-title">Supporting Records</span>
       </div>
       <div className="source-list">
         {sources.map((src, i) => (

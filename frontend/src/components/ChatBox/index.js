@@ -14,14 +14,14 @@ export default function ChatBox({ messages, isLoading }) {
     return (
       <div className="chatbox-empty">
         <div className="chatbox-empty-icon"></div>
-        <h3 className="chatbox-empty-title">Ask About Your Research</h3>
+        <h3 className="chatbox-empty-title">Review Patient Records</h3>
         <p className="chatbox-empty-subtitle">
-          Upload research papers and ask questions. The AI will answer strictly from the uploaded documents.
+          Ask questions about uploaded patient records and receive answers supported by those records.
         </p>
         <div className="chatbox-tips">
-          <div className="tip-item">Ask specific questions about methods or findings</div>
-          <div className="tip-item">Cite exact terms from the paper for accuracy</div>
-          <div className="tip-item">Sources and page numbers are always cited</div>
+          <div className="tip-item">Ask about diagnoses, medications, results, or treatment history</div>
+          <div className="tip-item">Select one record when reviewing a specific patient</div>
+          <div className="tip-item">Supporting records and page numbers are provided</div>
         </div>
       </div>
     );

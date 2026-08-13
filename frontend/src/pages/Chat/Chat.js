@@ -25,7 +25,7 @@ export default function Chat() {
     setIsLoading(true);
     try {
       const res = await sendChatMessage(question, documentId);
-      const data = res.data;
+      const data = { ...res.data, showRetrievedContext: documentId !== 'all' };
       setMessages(prev => [...prev, { role: 'assistant', data }]);
     } catch (err) {
       setMessages(prev => [...prev, {
@@ -49,7 +49,7 @@ export default function Chat() {
     <div className="chat-page">
       <div className="chat-toolbar">
         <div className="chat-toolbar-left">
-          <span className="chat-title">AI Research Chat</span>
+          <span className="chat-title">Patient Record Assistant</span>
           <span className="chat-count">{messages.length > 0 ? `${Math.floor(messages.length / 2)} question(s)` : 'Ready'}</span>
         </div>
         <label className="chat-document-picker">

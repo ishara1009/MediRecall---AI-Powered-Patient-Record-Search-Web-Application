@@ -22,7 +22,7 @@ export default function AnswerCard({ data }) {
     <div className="answer-card">
       <div className="answer-header">
         <div className="answer-badge">
-          <span>AI Answer</span>
+          <span>Record Summary</span>
         </div>
         <div className="answer-actions">
           <div
@@ -43,26 +43,26 @@ export default function AnswerCard({ data }) {
 
       <SourceCard sources={data.sources} />
 
-      {data.context_references && data.context_references.length > 0 && (
+      {data.showRetrievedContext && data.context_references?.length > 0 && (
         <div className="context-section">
-          <button
-            className="context-toggle"
-            onClick={() => setShowContext(!showContext)}
-          >
+          <button className="context-toggle" onClick={() => setShowContext(prev => !prev)}>
             {showContext ? 'Hide Retrieved Context' : 'Show Retrieved Context'}
           </button>
           {showContext && (
             <div className="context-list">
-              {data.context_references.map((ctx, i) => (
-                <div key={i} className="context-item">
-                  <span className="context-num">#{i + 1}</span>
-                  <p className="context-text">{ctx.slice(0, 300)}{ctx.length > 300 ? '...' : ''}</p>
+              {data.context_references.map((context, index) => (
+                <div className="context-item" key={index}>
+                  <span className="context-num">#{index + 1}</span>
+                  <p className="context-text">
+                    {context.slice(0, 500)}{context.length > 500 ? '…' : ''}
+                  </p>
                 </div>
               ))}
             </div>
           )}
         </div>
       )}
+
     </div>
   );
 }

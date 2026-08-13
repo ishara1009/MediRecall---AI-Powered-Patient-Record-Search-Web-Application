@@ -18,7 +18,7 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
             logger.info("No documents found in vectorstore. Custom fallback triggered.")
             return {
                 "question": question,
-                "answer": "I could not find enough information inside the uploaded research papers.",
+                "answer": "I could not find enough information in the selected patient records.",
                 "confidence_score": 0.0,
                 "sources": [],
                 "context_references": []
@@ -30,9 +30,7 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
         seen_citations = set()
         
         for doc in retrieved_docs:
-            page_text = doc.page_content
-            context_blocks.append(page_text)
-            
+            context_blocks.append(doc.page_content)
             # Extract metadata details
             filename = doc.metadata.get("filename", "Unknown")
             page_num = doc.metadata.get("page", 1)
@@ -74,7 +72,7 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
             "answer": answer_text,
             "confidence_score": confidence_val,
             "sources": sources_list,
-            "context_references": context_blocks
+            "context_references": context_blocks if document_id else []
         }
 
     except Exception as e:

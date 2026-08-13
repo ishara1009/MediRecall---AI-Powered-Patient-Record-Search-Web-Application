@@ -27,7 +27,7 @@ export default function PromptInput({ onSend, isLoading, disabled = false }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a question about your research papers..."
+          placeholder="Ask a question about the selected patient records..."
           rows={1}
           disabled={isLoading || disabled}
         />

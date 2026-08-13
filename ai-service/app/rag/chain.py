@@ -7,7 +7,7 @@ from app.utils.logger import logger
 class LLMAnswer(BaseModel):
     answer: str = Field(
         ..., 
-        description="The answer derived strictly from the context. Fallback to exactly: 'I could not find enough information inside the uploaded research papers.' if evidence is not available."
+        description="The answer derived strictly from the context. Fallback to exactly: 'I could not find enough information in the selected patient records.' if evidence is not available."
     )
     confidence_score: float = Field(
         ..., 
