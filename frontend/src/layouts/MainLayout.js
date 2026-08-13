@@ -9,7 +9,8 @@ const AUTH_ROUTES = ['/login', '/setup', '/forgot-password'];
 
 export default function MainLayout({ children }) {
   const location = useLocation();
-  const isChatPage = location.pathname === '/chat';
+  const isChatPage = location.pathname === '/chat' || location.pathname === '/doctor/chat';
+  const hasChatSidebar = location.pathname === '/chat';
   const isAuthPage = AUTH_ROUTES.includes(location.pathname);
 
   useEffect(() => {
@@ -23,9 +24,9 @@ export default function MainLayout({ children }) {
   return (
     <div className="main-layout">
       <Navbar />
-      <div className={`layout-body ${isChatPage ? 'with-sidebar' : ''}`}>
-        {isChatPage && <Sidebar />}
-        <main className={`main-content ${isChatPage ? 'chat-main' : ''}`}>
+      <div className={`layout-body ${hasChatSidebar ? 'with-sidebar' : ''}`}>
+        {hasChatSidebar && <Sidebar />}
+        <main className={`main-content ${isChatPage ? 'chat-main' : ''} ${hasChatSidebar ? 'has-chat-sidebar' : ''}`}>
           {children}
         </main>
       </div>

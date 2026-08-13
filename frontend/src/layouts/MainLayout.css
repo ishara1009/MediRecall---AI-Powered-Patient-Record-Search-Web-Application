@@ -20,10 +20,11 @@
 }
 
 .main-content.chat-main {
-  margin-left: var(--sidebar-width);
   padding: 0;
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--navbar-height));
   overflow: hidden;
 }
+
+.main-content.chat-main.has-chat-sidebar { margin-left: var(--sidebar-width); }

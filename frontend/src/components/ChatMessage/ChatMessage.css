@@ -1,6 +1,6 @@
 .chat-message {
   width: 100%;
-  animation: fadeIn 0.3s ease;
+  animation: message-enter 0.42s cubic-bezier(.2,.8,.2,1) both;
 }
 
 .user-message {
@@ -11,8 +11,10 @@
 .user-bubble {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   border-radius: 18px 18px 4px 18px;
-  padding: 12px 18px;
+  padding: 13px 19px;
   max-width: 70%;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 28px rgba(79, 70, 229, .22), inset 0 1px rgba(255,255,255,.12);
 }
 
 .user-text {
@@ -40,9 +42,16 @@
   flex-shrink: 0;
   margin-right: 12px;
   margin-top: 4px;
+  box-shadow: 0 0 0 5px rgba(99,102,241,.08), 0 8px 24px rgba(99,102,241,.28);
 }
+.ai-avatar::before { content: '✦'; color: white; font-size: 16px; }
 
 .ai-content {
   flex: 1;
   min-width: 0;
+}
+
+@keyframes message-enter {
+  from { opacity: 0; transform: translateY(12px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
