@@ -163,6 +163,17 @@
   align-items: center;
 }
 
+.patient-card-summary { display: flex; align-items: center; gap: 11px; }
+.patient-card-summary img, .patient-photo-placeholder {
+  width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+}
+.patient-photo-placeholder { display: grid; place-items: center; background: rgba(99,102,241,.16); color: var(--text-indigo); font-weight: 800; }
+.patient-card-summary div { display: flex; flex-direction: column; min-width: 0; }
+.patient-card-summary strong { color: var(--text-main); font-size: 14px; }
+.patient-card-summary span { color: var(--text-muted); font-size: 11px; }
+.record-diseases { margin: -6px 0; color: var(--accent-amber); font-size: 11px; }
+.modal-patient-photo { width: 88px; height: 88px; border-radius: 14px; object-fit: cover; border: 1px solid var(--border-color); }
+
 .file-avatar {
   font-size: 28px;
 }

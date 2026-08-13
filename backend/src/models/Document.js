@@ -10,6 +10,10 @@ const DocumentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  patientName: { type: String, required: true, trim: true },
+  patientId: { type: String, required: true, trim: true, index: true },
+  diseases: [{ type: String, trim: true }],
+  patientPhoto: { type: String, default: '' },
   fileSize: {
     type: Number,
     required: true

@@ -21,11 +21,12 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  // Check mime type
-  if (file.mimetype === 'application/pdf') {
+  const isPdf = ['files', 'pdf'].includes(file.fieldname) && file.mimetype === 'application/pdf';
+  const isPatientPhoto = file.fieldname === 'patientPhoto' && ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+  if (isPdf || isPatientPhoto) {
     cb(null, true);
   } else {
-    cb(new Error('Only PDF files are allowed!'), false);
+    cb(new Error('Records must be PDFs and the patient photo must be JPG, PNG, or WebP.'), false);
   }
 };
 

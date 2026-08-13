@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDocuments, deleteDocument, rebuildDocument, rebuildAllDocuments } from '../../api/api';
+import { getDocuments, deleteDocument, rebuildDocument, rebuildAllDocuments, updateDocumentPatient } from '../../api/api';
 import DocumentCard from '../../components/DocumentCard';
 import Loader from '../../components/Loader';
 import './Documents.css';
@@ -12,6 +12,29 @@ export default function Documents() {
   const [rebuildingId, setRebuildingId] = useState(null);
   const [rebuildingAll, setRebuildingAll] = useState(false);
   const [message, setMessage] = useState('');
+  const [editingDoc, setEditingDoc] = useState(null);
+  const [editPatient, setEditPatient] = useState({ name: '', id: '', diseases: '', photo: null, pdf: null });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const openEdit = (doc) => {
+    setEditingDoc(doc);
+    setEditPatient({ name: doc.patientName || '', id: doc.patientId || '', diseases: (doc.diseases || []).join(', '), photo: null, pdf: null });
+  };
+
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    setSavingEdit(true);
+    try {
+      const res = await updateDocumentPatient(editingDoc._id, editPatient);
+      setDocs(prev => prev.map(doc => doc._id === editingDoc._id ? res.data : doc));
+      setEditingDoc(null);
+      setMessage('Patient information updated successfully.');
+    } catch (err) {
+      setMessage(err.response?.data?.message || 'Failed to update patient information.');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   const fetchDocs = async () => {
     try {
@@ -67,7 +90,8 @@ export default function Documents() {
     }
   };
 
-  const filtered = docs.filter(d => d.filename.toLowerCase().includes(search.toLowerCase()));
+  const filtered = docs.filter(d => [d.filename, d.patientName, d.patientId, ...(d.diseases || [])]
+    .some(value => value?.toLowerCase().includes(search.toLowerCase())));
 
   return (
     <div className="documents-page fade-in">
@@ -97,7 +121,7 @@ export default function Documents() {
           id="docs-search-input"
           type="text"
           className="docs-search"
-          placeholder="Search documents..."
+          placeholder="Search by patient, ID, disease, or document..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -119,10 +143,40 @@ export default function Documents() {
               doc={doc}
               onDelete={handleDelete}
               onRebuild={handleRebuild}
+              onEdit={openEdit}
               isDeleting={deletingId === doc._id}
               isRebuilding={rebuildingId === doc._id}
             />
           ))}
+        </div>
+      )}
+
+      {editingDoc && (
+        <div className="modal-backdrop" onClick={() => setEditingDoc(null)}>
+          <form className="patient-edit-modal glass" onSubmit={saveEdit} onClick={(e) => e.stopPropagation()}>
+            <div className="patient-edit-header">
+              <h2>Edit Patient Information</h2>
+              <button type="button" onClick={() => setEditingDoc(null)}>Close</button>
+            </div>
+            <label className="edit-photo-picker">
+              {(editPatient.photo || editingDoc.patientPhoto) ? (
+                <img src={editPatient.photo ? URL.createObjectURL(editPatient.photo) : `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/${editingDoc.patientPhoto}`} alt="Patient" />
+              ) : <span>Add Photo</span>}
+              <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => setEditPatient(prev => ({ ...prev, photo: e.target.files?.[0] || null }))} />
+            </label>
+            <label>Patient Name<input value={editPatient.name} onChange={(e) => setEditPatient(prev => ({ ...prev, name: e.target.value }))} required /></label>
+            <label>Patient ID<input value={editPatient.id} onChange={(e) => setEditPatient(prev => ({ ...prev, id: e.target.value }))} required /></label>
+            <label>Diseases / Conditions<input value={editPatient.diseases} onChange={(e) => setEditPatient(prev => ({ ...prev, diseases: e.target.value }))} placeholder="Comma-separated conditions" required /></label>
+            <label className="replace-pdf-field">
+              Replace PDF (optional)
+              <input type="file" accept="application/pdf" onChange={(e) => setEditPatient(prev => ({ ...prev, pdf: e.target.files?.[0] || null }))} />
+              <small>{editPatient.pdf ? `New file: ${editPatient.pdf.name}` : `Current file: ${editingDoc.filename}`}</small>
+            </label>
+            <div className="patient-edit-actions">
+              <button type="button" className="btn-secondary" onClick={() => setEditingDoc(null)}>Cancel</button>
+              <button className="btn-primary" disabled={savingEdit}>{savingEdit ? 'Saving...' : 'Save Changes'}</button>
+            </div>
+          </form>
         </div>
       )}
     </div>

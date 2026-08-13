@@ -68,3 +68,16 @@
 .docs-empty-icon { font-size: 56px; margin-bottom: 16px; }
 .docs-empty h3 { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
 .docs-empty p { font-size: 14px; line-height: 1.7; }
+
+.patient-edit-modal { width: min(520px, calc(100% - 32px)); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.patient-edit-header { display: flex; justify-content: space-between; align-items: center; }
+.patient-edit-header h2 { font-size: 20px; }
+.patient-edit-header button { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; }
+.patient-edit-modal > label:not(.edit-photo-picker) { display: flex; flex-direction: column; gap: 7px; color: var(--text-muted); font-size: 12px; font-weight: 700; }
+.patient-edit-modal input { padding: 12px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text-main); font: inherit; outline: none; }
+.patient-edit-modal input:focus { border-color: var(--border-glow); }
+.edit-photo-picker { width: 96px; height: 96px; border: 1px dashed var(--border-glow); border-radius: 50%; overflow: hidden; display: grid; place-items: center; color: var(--text-indigo); cursor: pointer; background: rgba(99, 102, 241, 0.08); }
+.edit-photo-picker img { width: 100%; height: 100%; object-fit: cover; }
+.patient-edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.replace-pdf-field small { color: var(--text-dim); font-weight: 400; }
+.replace-pdf-field input[type="file"] { color: var(--text-muted); }

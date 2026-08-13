@@ -9,6 +9,14 @@
   box-shadow: var(--shadow-glow);
 }
 
+.doc-patient { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.doc-patient img, .doc-patient > span { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+.doc-patient > span { display: grid; place-items: center; background: rgba(99,102,241,.16); color: var(--text-indigo); font-weight: 800; }
+.doc-patient div { display: flex; flex-direction: column; min-width: 0; }
+.doc-patient strong { color: var(--text-main); font-size: 14px; }
+.doc-patient small { color: var(--text-muted); font-size: 11px; }
+.doc-diseases { color: var(--accent-amber); font-size: 11px; margin-bottom: 12px; }
+
 .doc-card-header {
   display: flex;
   align-items: flex-start;
@@ -72,8 +80,18 @@
 
 .doc-card-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
+
+.edit-btn {
+  flex-basis: 100%;
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+}
+
+.edit-btn:hover { background: rgba(139, 92, 246, 0.18); }
 
 .doc-btn {
   flex: 1;

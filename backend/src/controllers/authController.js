@@ -301,18 +301,9 @@ const updateProfile = async (req, res) => {
 
     const { fullName, email, phoneNumber } = req.body;
 
-    // Perform validation
-    if (email && email !== user.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return sendError(res, 'Invalid email address format', 400);
-      }
-      
-      const duplicateEmail = await User.findOne({ email });
-      if (duplicateEmail) {
-        return sendError(res, 'Email address is already in use by another user', 400);
-      }
-      user.email = email;
+    // Email is the immutable account identifier and cannot be changed here.
+    if (email && email.trim().toLowerCase() !== user.email) {
+      return sendError(res, 'Email address cannot be changed', 400);
     }
 
     if (fullName) {

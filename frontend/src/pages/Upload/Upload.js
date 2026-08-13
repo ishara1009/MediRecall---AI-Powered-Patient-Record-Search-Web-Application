@@ -9,7 +9,9 @@ export default function Upload() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [patient, setPatient] = useState({ name: '', id: '', diseases: '', photo: null });
   const fileInputRef = useRef(null);
+  const photoInputRef = useRef(null);
 
   const addFiles = (newFiles) => {
     const pdfs = Array.from(newFiles).filter(f => f.type === 'application/pdf');
@@ -31,17 +33,21 @@ export default function Upload() {
   };
 
   const handleUpload = async () => {
-    if (!files.length) return;
+    if (!files.length || !patient.name.trim() || !patient.id.trim() || !patient.diseases.trim()) {
+      setError('Patient name, ID, diseases, and at least one PDF are required.');
+      return;
+    }
     setUploading(true);
     setProgress(0);
     setResult(null);
     setError('');
     try {
-      const res = await uploadDocuments(files, (evt) => {
+      const res = await uploadDocuments(files, patient, (evt) => {
         if (evt.total) setProgress(Math.round((evt.loaded / evt.total) * 100));
       });
       setResult(res);
       setFiles([]);
+      setPatient({ name: '', id: '', diseases: '', photo: null });
     } catch (err) {
       setError(err.response?.data?.message || 'Upload failed. Is the backend running?');
     } finally {
@@ -54,9 +60,43 @@ export default function Upload() {
   return (
     <div className="upload-page fade-in">
       <div className="page-header">
-        <h1 className="page-title">Upload Research Papers</h1>
-        <p className="page-subtitle">Upload one or more PDF research papers. They will be automatically indexed for AI-powered question answering.</p>
+        <h1 className="page-title">Upload Patient Records</h1>
+        <p className="page-subtitle">Add patient details and upload one or more PDF medical records for AI-powered question answering.</p>
       </div>
+
+      <section className="patient-upload-form glass">
+        <div className="patient-photo-field">
+          <button type="button" className="patient-photo-picker" onClick={() => photoInputRef.current?.click()}>
+            {patient.photo ? (
+              <img src={URL.createObjectURL(patient.photo)} alt="Patient preview" />
+            ) : (
+              <span>Add Patient Photo</span>
+            )}
+          </button>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+            onChange={(e) => setPatient(prev => ({ ...prev, photo: e.target.files?.[0] || null }))}
+          />
+          <small>JPG, PNG or WebP</small>
+        </div>
+        <div className="patient-fields">
+          <label>
+            <span>Patient Name</span>
+            <input value={patient.name} onChange={(e) => setPatient(prev => ({ ...prev, name: e.target.value }))} placeholder="e.g. Nimal Perera" />
+          </label>
+          <label>
+            <span>Patient ID</span>
+            <input value={patient.id} onChange={(e) => setPatient(prev => ({ ...prev, id: e.target.value }))} placeholder="e.g. PAT-0001" />
+          </label>
+          <label className="diseases-field">
+            <span>Diseases / Conditions</span>
+            <input value={patient.diseases} onChange={(e) => setPatient(prev => ({ ...prev, diseases: e.target.value }))} placeholder="e.g. Diabetes, Hypertension" />
+          </label>
+        </div>
+      </section>
 
       {/* Drop Zone */}
       <div

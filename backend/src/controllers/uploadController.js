@@ -5,10 +5,17 @@ const { sendSuccess, sendError } = require('../utils/response');
 const logger = require('../utils/logger');
 
 const uploadDocuments = async (req, res, next) => {
-  const files = req.files || (req.file ? [req.file] : []);
+  const files = req.files?.files || [];
+  const patientPhoto = req.files?.patientPhoto?.[0];
+  const patientName = req.body.patientName?.trim();
+  const patientId = req.body.patientId?.trim();
+  const diseases = (req.body.diseases || '').split(',').map(item => item.trim()).filter(Boolean);
   
   if (!files || files.length === 0) {
     return sendError(res, 'No PDF files provided', 400);
+  }
+  if (!patientName || !patientId || diseases.length === 0) {
+    return sendError(res, 'Patient name, ID, and at least one disease or condition are required', 400);
   }
 
   const results = [];
@@ -28,6 +35,10 @@ const uploadDocuments = async (req, res, next) => {
       const newDoc = new Document({
         customId: customId,
         filename: file.originalname,
+        patientName,
+        patientId,
+        diseases,
+        patientPhoto: patientPhoto?.filename || '',
         fileSize: file.size,
         totalPages: aiResult.total_pages || 0,
         filePath: file.path // Keep a local reference on the node system

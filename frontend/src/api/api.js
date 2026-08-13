@@ -208,11 +208,16 @@ export const getDoctorStats = async () => {
 // ==========================================
 
 // Ingest multiple PDFs (Admin only)
-export const uploadDocuments = async (files, onUploadProgress) => {
+export const uploadDocuments = async (files, patient, onUploadProgress) => {
   const formData = new FormData();
   for (const file of files) {
     formData.append('files', file);
   }
+  formData.append('patientName', patient.name);
+  formData.append('patientId', patient.id);
+  formData.append('diseases', patient.diseases);
+  if (patient.photo) formData.append('patientPhoto', patient.photo);
+  if (patient.pdf) formData.append('pdf', patient.pdf);
   const response = await apiClient.post('/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     onUploadProgress,
@@ -238,6 +243,18 @@ export const getDocuments = async () => {
 // Delete metadata + index (Admin only)
 export const deleteDocument = async (id) => {
   const response = await apiClient.delete(`/documents/${id}`);
+  return response.data;
+};
+
+export const updateDocumentPatient = async (id, patient) => {
+  const formData = new FormData();
+  formData.append('patientName', patient.name);
+  formData.append('patientId', patient.id);
+  formData.append('diseases', patient.diseases);
+  if (patient.photo) formData.append('patientPhoto', patient.photo);
+  const response = await apiClient.put(`/documents/${id}/patient`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
   return response.data;
 };
 

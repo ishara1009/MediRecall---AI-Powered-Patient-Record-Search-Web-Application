@@ -28,6 +28,14 @@ export default function Profile() {
   const [pwSuccess, setPwSuccess] = useState('');
   const [pwLoading, setPwLoading] = useState(false);
 
+  const scrollToPageTop = () => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+  };
+
   // Populate data on mount/user change
   useEffect(() => {
     if (user) {
@@ -63,16 +71,16 @@ export default function Profile() {
     setProfileSuccess('');
     setProfileLoading(true);
 
-    if (!profileData.fullName || !profileData.email || !profileData.phoneNumber) {
-      setProfileError('Name, Email and Phone Number are required fields.');
+    if (!profileData.fullName || !profileData.phoneNumber) {
+      setProfileError('Name and Phone Number are required fields.');
       setProfileLoading(false);
+      scrollToPageTop();
       return;
     }
 
     try {
       const data = new FormData();
       data.append('fullName', profileData.fullName.trim());
-      data.append('email', profileData.email.trim());
       data.append('phoneNumber', profileData.phoneNumber.trim());
       if (profilePicture) {
         data.append('profilePicture', profilePicture);
@@ -90,6 +98,7 @@ export default function Profile() {
       setProfileError(err.response?.data?.message || err.message || 'An error occurred.');
     } finally {
       setProfileLoading(false);
+      scrollToPageTop();
     }
   };
 
@@ -111,18 +120,21 @@ export default function Profile() {
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       setPwError('Please fill in all security fields.');
       setPwLoading(false);
+      scrollToPageTop();
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
       setPwError('New passwords do not match.');
       setPwLoading(false);
+      scrollToPageTop();
       return;
     }
 
     if (newPassword.length < 8) {
       setPwError('New password must be at least 8 characters long.');
       setPwLoading(false);
+      scrollToPageTop();
       return;
     }
 
@@ -143,6 +155,7 @@ export default function Profile() {
       setPwError(err.response?.data?.message || err.message || 'An error occurred.');
     } finally {
       setPwLoading(false);
+      scrollToPageTop();
     }
   };
 
@@ -231,9 +244,10 @@ export default function Profile() {
                   id="email"
                   name="email"
                   value={profileData.email}
-                  onChange={handleProfileChange}
-                  required
+                  disabled
+                  className="disabled-input"
                 />
+                <span className="field-hint">Email is your account identifier and cannot be changed.</span>
               </div>
 
               <div className="form-group">

@@ -19,6 +19,66 @@
   line-height: 1.7;
 }
 
+.patient-upload-form {
+  display: flex;
+  gap: 24px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.patient-photo-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.patient-photo-field small { color: var(--text-dim); font-size: 10px; }
+
+.patient-photo-picker {
+  width: 112px;
+  height: 112px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px dashed var(--border-glow);
+  border-radius: 14px;
+  background: rgba(99, 102, 241, 0.06);
+  color: var(--text-indigo);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.patient-photo-picker img { width: 100%; height: 100%; object-fit: cover; }
+
+.patient-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.patient-fields label { display: flex; flex-direction: column; gap: 7px; }
+.patient-fields label span { color: var(--text-muted); font-size: 12px; font-weight: 700; }
+.patient-fields input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: var(--bg-input);
+  color: var(--text-main);
+  font: inherit;
+}
+.patient-fields input:focus { border-color: var(--border-glow); }
+.diseases-field { grid-column: 1 / -1; }
+
+@media (max-width: 600px) {
+  .patient-upload-form { flex-direction: column; }
+  .patient-fields { grid-template-columns: 1fr; }
+  .diseases-field { grid-column: auto; }
+}
+
 .drop-zone {
   border: 2px dashed var(--border-color);
   border-radius: var(--radius-lg);

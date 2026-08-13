@@ -13,9 +13,16 @@ function formatDate(dateStr) {
   });
 }
 
-export default function DocumentCard({ doc, onDelete, onRebuild, isDeleting, isRebuilding }) {
+export default function DocumentCard({ doc, onDelete, onRebuild, onEdit, isDeleting, isRebuilding }) {
   return (
     <div className="doc-card glass">
+      <div className="doc-patient">
+        {doc.patientPhoto ? (
+          <img src={`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/${doc.patientPhoto}`} alt={doc.patientName} />
+        ) : <span>{doc.patientName?.charAt(0) || '?'}</span>}
+        <div><strong>{doc.patientName || 'Legacy record'}</strong><small>{doc.patientId || 'No patient ID'}</small></div>
+      </div>
+      {doc.diseases?.length > 0 && <p className="doc-diseases">{doc.diseases.join(', ')}</p>}
       <div className="doc-card-header">
         <div className="doc-info">
           <h4 className="doc-filename" title={doc.filename}>{doc.filename}</h4>
@@ -33,6 +40,7 @@ export default function DocumentCard({ doc, onDelete, onRebuild, isDeleting, isR
         </div>
       </div>
       <div className="doc-card-actions">
+        <button className="doc-btn edit-btn" onClick={() => onEdit(doc)}>Edit Patient</button>
         <button
           id={`rebuild-btn-${doc._id}`}
           className="doc-btn rebuild-btn"

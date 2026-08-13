@@ -42,9 +42,13 @@ export default function PatientRecordSearch() {
     }
 
     // Filter results locally
-    const filtered = documents.filter((doc) =>
-      doc.filename.toLowerCase().includes(queryTerm.toLowerCase())
-    );
+    const normalizedQuery = queryTerm.toLowerCase();
+    const filtered = documents.filter((doc) => [
+      doc.filename,
+      doc.patientName,
+      doc.patientId,
+      ...(doc.diseases || [])
+    ].some(value => value?.toLowerCase().includes(normalizedQuery)));
     setFilteredDocuments(filtered);
 
     // Call API to persist this search in DB logs 
@@ -129,6 +133,18 @@ export default function PatientRecordSearch() {
               <div className="card-top-row">
                 <span className="file-ext">PDF</span>
               </div>
+              <div className="patient-card-summary">
+                {doc.patientPhoto ? (
+                  <img src={`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/${doc.patientPhoto}`} alt={doc.patientName} />
+                ) : (
+                  <div className="patient-photo-placeholder">{doc.patientName?.charAt(0) || '?'}</div>
+                )}
+                <div>
+                  <strong>{doc.patientName || 'Legacy record'}</strong>
+                  <span>{doc.patientId || 'No patient ID'}</span>
+                </div>
+              </div>
+              {doc.diseases?.length > 0 && <p className="record-diseases">{doc.diseases.join(', ')}</p>}
               <h3 className="record-filename">{doc.filename}</h3>
               <div className="record-meta-indicators">
                 <span className="record-ind">
@@ -164,14 +180,26 @@ export default function PatientRecordSearch() {
             </div>
             
             <div className="modal-document-details">
+              {selectedDoc.patientPhoto && (
+                <img className="modal-patient-photo" src={`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/${selectedDoc.patientPhoto}`} alt={selectedDoc.patientName} />
+              )}
+              <div className="detail-row flex">
+                <div className="detail-entry flex-1">
+                  <span className="detail-label">Patient Name</span>
+                  <span className="detail-value value-highlight">{selectedDoc.patientName || 'Not available'}</span>
+                </div>
+                <div className="detail-entry flex-1">
+                  <span className="detail-label">Patient ID</span>
+                  <span className="detail-value">{selectedDoc.patientId || 'Not available'}</span>
+                </div>
+              </div>
+              <div className="detail-entry">
+                <span className="detail-label">Diseases / Conditions</span>
+                <span className="detail-value">{selectedDoc.diseases?.join(', ') || 'Not available'}</span>
+              </div>
               <div className="detail-entry">
                 <span className="detail-label">File Name</span>
                 <span className="detail-value value-highlight">{selectedDoc.filename}</span>
-              </div>
-
-              <div className="detail-entry">
-                <span className="detail-label">MongoDB Object ID</span>
-                <span className="detail-value table-mono">{selectedDoc._id}</span>
               </div>
 
               <div className="detail-row flex">
