@@ -57,7 +57,7 @@ export default function AdminDashboard() {
         </div>
         <div className="badge-wrapper">
           <span className="secure-badge">
-            <span className="shield-icon">🛡️</span> HIPAA Secure Workspace
+            HIPAA Secure Workspace
           </span>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
           </div>
           <div className="card-bottom font-alt">
             <Link to="/admin/patients" className="dashboard-shortcut-link">
-              Manage Records →
+              Manage Records
             </Link>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
           </div>
           <div className="card-bottom font-alt">
             <Link to="/admin/logs" className="dashboard-shortcut-link">
-              View Logs →
+              View Logs
             </Link>
           </div>
         </div>
@@ -116,25 +116,21 @@ export default function AdminDashboard() {
           <h3>Quick Operations</h3>
           <div className="ops-grid">
             <Link to="/admin/create-doctor" className="ops-btn glass-interactive">
-              <span className="ops-icon">➕</span>
               <span className="ops-title">Create Doctor</span>
               <span className="ops-desc">Register a new physician account</span>
             </Link>
 
             <Link to="/admin/doctors" className="ops-btn glass-interactive">
-              <span className="ops-icon">👥</span>
               <span className="ops-title">Manage Physicians</span>
               <span className="ops-desc">Update, deactivate, or delete doctors</span>
             </Link>
 
-            <Link to="/admin/patients" className="ops-btn glass-interactive">
-              <span className="ops-icon">📄</span>
+            <Link to="/admin/upload" className="ops-btn glass-interactive">
               <span className="ops-title">Ingest Records</span>
               <span className="ops-desc">Upload patient charts PDF/files</span>
             </Link>
 
             <Link to="/admin/logs" className="ops-btn glass-interactive">
-              <span className="ops-icon">📋</span>
               <span className="ops-title">Audit Trails</span>
               <span className="ops-desc">Log database access events</span>
             </Link>

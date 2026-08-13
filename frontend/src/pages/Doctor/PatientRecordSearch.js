@@ -72,7 +72,6 @@ export default function PatientRecordSearch() {
 
       <form onSubmit={handleSearchSubmit} className="search-bar-form">
         <div className="search-input-wrapper">
-          <span className="search-icon-inside">🔍</span>
           <input
             type="text"
             placeholder="Search matching files (e.g. Patient ID, chart name...)"
@@ -82,7 +81,7 @@ export default function PatientRecordSearch() {
           />
           {searchWord && (
             <button type="button" onClick={handleClearSearch} className="clear-search-btn">
-              ✕
+              Clear
             </button>
           )}
         </div>
@@ -115,7 +114,6 @@ export default function PatientRecordSearch() {
               onClick={() => setSelectedDoc(doc)}
             >
               <div className="card-top-row">
-                <span className="file-avatar">📄</span>
                 <span className="file-ext">PDF</span>
               </div>
               <h3 className="record-filename">{doc.filename}</h3>
@@ -141,7 +139,7 @@ export default function PatientRecordSearch() {
             <div className="modal-header-row">
               <h2>Medical Document Profile</h2>
               <button onClick={() => setSelectedDoc(null)} className="modal-close-cross">
-                ✕
+                Close
               </button>
             </div>
             

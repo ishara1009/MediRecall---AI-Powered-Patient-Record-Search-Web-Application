@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
@@ -11,6 +11,10 @@ export default function MainLayout({ children }) {
   const location = useLocation();
   const isChatPage = location.pathname === '/chat';
   const isAuthPage = AUTH_ROUTES.includes(location.pathname);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
 
   if (isAuthPage) {
     return <>{children}</>;

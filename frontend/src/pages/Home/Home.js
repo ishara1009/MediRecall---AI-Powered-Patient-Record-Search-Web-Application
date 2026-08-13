@@ -59,7 +59,7 @@ export default function Home() {
         <section className="recent-section">
           <div className="section-header">
             <h2 className="section-title">Recent Documents</h2>
-            <Link to="/documents" className="section-link">View All →</Link>
+            <Link to="/documents" className="section-link">View All</Link>
           </div>
           <div className="recent-list">
             {docs.slice(0, 4).map(doc => (

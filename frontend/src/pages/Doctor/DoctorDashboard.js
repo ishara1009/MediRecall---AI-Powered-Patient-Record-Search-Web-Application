@@ -46,7 +46,7 @@ export default function DoctorDashboard() {
         </div>
         <div className="badge-wrapper">
           <span className="hipaa-compliance-badge">
-            ⚡ HIPAA Verified Session
+            HIPAA Verified Session
           </span>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function DoctorDashboard() {
           </div>
           <div className="card-bottom">
             <Link to="/doctor/search" className="dashboard-link">
-              Search Patient Records →
+              Search Patient Records
             </Link>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function DoctorDashboard() {
           </div>
           <div className="card-bottom">
             <Link to="/doctor/chat" className="dashboard-link">
-              consult AI chatbot →
+              Consult AI chatbot
             </Link>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function DoctorDashboard() {
           </div>
           <div className="card-bottom">
             <Link to="/doctor/search-history" className="dashboard-link">
-              View Logs History →
+              View Logs History
             </Link>
           </div>
         </div>
@@ -95,25 +95,21 @@ export default function DoctorDashboard() {
           <h3>Quick Consultation Tasks</h3>
           <div className="tasks-grid">
             <Link to="/doctor/search" className="task-tile glass-interactive">
-              <span className="tile-icon">🔎</span>
               <span className="tile-title">Patient Records Search</span>
               <span className="tile-desc">Search documents metadata, view summary details</span>
             </Link>
 
             <Link to="/doctor/chat" className="task-tile glass-interactive">
-              <span className="tile-icon">💬</span>
               <span className="tile-title">AI Chat Assistant</span>
               <span className="tile-desc">Query information using RAG chatbot</span>
             </Link>
 
             <Link to="/doctor/search-history" className="task-tile glass-interactive">
-              <span className="tile-icon">📜</span>
               <span className="tile-title">Consultation Search Log</span>
               <span className="tile-desc">View previous search log criteria</span>
             </Link>
 
             <Link to="/doctor/profile" className="task-tile glass-interactive">
-              <span className="tile-icon">⚙️</span>
               <span className="tile-title">Account Settings</span>
               <span className="tile-desc">View details, modify profile picture, update passwords</span>
             </Link>
