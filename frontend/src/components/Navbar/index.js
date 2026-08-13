@@ -26,6 +26,7 @@ export default function Navbar() {
         { path: '/admin/dashboard', label: 'Dashboard' },
         { path: '/admin/doctors', label: 'Physicians' },
         { path: '/admin/patients', label: 'Records' },
+        { path: '/admin/upload', label: 'Upload PDF' },
         { path: '/admin/logs', label: 'Audit Logs' },
       ];
     }
