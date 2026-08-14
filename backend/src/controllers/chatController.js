@@ -17,12 +17,20 @@ const queryChat = async (req, res, next) => {
   try {
     const patient = await Patient.findOne({ patientId: String(patientId || '').toUpperCase() });
     if (!patient) return sendError(res, 'Select a valid patient before using the clinical assistant', 400);
+    const readyStatus = { $or: [{ processingStatus: 'READY' }, { processingStatus: { $exists: false } }] };
     let document = null;
     if (documentId) {
-      document = await Document.findOne({ customId: documentId, patient: patient._id, processingStatus: 'READY' });
+      document = await Document.findOne({ $and: [
+        { customId: documentId },
+        { $or: [{ patient: patient._id }, { patientId: patient.patientId }] },
+        readyStatus
+      ] });
       if (!document) return sendError(res, 'Document is not ready or does not belong to the selected patient', 403);
     }
-    const readyCount = await Document.countDocuments({ patient: patient._id, processingStatus: 'READY' });
+    const readyCount = await Document.countDocuments({ $and: [
+      { $or: [{ patient: patient._id }, { patientId: patient.patientId }] },
+      readyStatus
+    ] });
     if (!readyCount) return sendError(res, 'No ready medical documents are available for this patient', 400);
     logger.info(`Sending patient-scoped question to AI RAG service for ${patient.patientId}`);
     

@@ -16,14 +16,17 @@ def retrieve_relevant_contexts(query: str, k: int = 5, patient_id: str = None, d
         # First: vector search
         if not patient_id:
             raise ValueError("A patient scope is required for clinical retrieval.")
-        search_filter = {"$and": [{"patient_id": patient_id}, {"document_id": document_id}]} if document_id else {"patient_id": patient_id}
+        # The API verifies that an explicitly selected document belongs to the
+        # patient. A document-only filter also supports trusted legacy indexes
+        # created before patient_id was stored in chunk metadata.
+        search_filter = {"document_id": document_id} if document_id else {"patient_id": patient_id}
         vector_results = vector_store.similarity_search(query, k=k, filter=search_filter)
 
         # Second: BM25 search
         bm25_results = []
         try:
             bm25_index = get_bm25_index()
-            bm25_hits = bm25_index.query(query, top_k=k, document_id=document_id, patient_id=patient_id)
+            bm25_hits = bm25_index.query(query, top_k=k, document_id=document_id, patient_id=None if document_id else patient_id)
             for hit in bm25_hits:
                 # Convert BM25 hit dicts into LangChain Document objects
                 doc = LC_Document(page_content=hit.get('text', ''), metadata=hit.get('metadata', {}))

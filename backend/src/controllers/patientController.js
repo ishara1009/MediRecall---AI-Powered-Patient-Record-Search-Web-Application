@@ -16,6 +16,23 @@ const listPatients = async (req, res) => {
   try {
     const users = await User.find({ role: 'User', status: 'active' });
     await Promise.all(users.map(ensurePatientForUser));
+    // Link PDFs uploaded before the dedicated Patient collection existed.
+    const legacyRecords = await Document.aggregate([
+      { $match: { patientId: { $type: 'string', $ne: '' } } },
+      { $group: { _id: { $toUpper: '$patientId' }, fullName: { $first: '$patientName' }, profilePicture: { $first: '$patientPhoto' } } }
+    ]);
+    for (const record of legacyRecords) {
+      const patient = await Patient.findOneAndUpdate(
+        { patientId: record._id },
+        { $setOnInsert: { patientId: record._id, fullName: record.fullName || record._id, profilePicture: record.profilePicture || '' } },
+        { new: true, upsert: true, runValidators: true }
+      );
+      await Document.updateMany(
+        { patientId: record._id, patient: null },
+        { $set: { patient: patient._id } },
+        { collation: { locale: 'en', strength: 2 } }
+      );
+    }
     const patients = await Patient.find().sort({ fullName: 1 }).lean();
     return sendSuccess(res, patients, 'Patients retrieved successfully');
   } catch (error) { return sendError(res, 'Failed to retrieve patients', 500, error.message); }
