@@ -27,6 +27,9 @@ export const checkHealth = async () => {
   return response.data;
 };
 
+export const getPublicDoctors = async () => (await apiClient.get('/public/doctors')).data;
+export const getPublicDoctor = async (doctorId) => (await apiClient.get(`/public/doctors/${doctorId}`)).data;
+
 // ==========================================
 // 1. Authentication APIs
 // ==========================================

@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import './MainLayout.css';
 
 const AUTH_ROUTES = ['/login', '/signup', '/setup', '/forgot-password'];
+const isPublicRoute = (pathname) => pathname === '/' || ['/about', '/features', '/how-it-works', '/doctors'].includes(pathname) || pathname.startsWith('/doctors/');
 
 export default function MainLayout({ children }) {
   const location = useLocation();
@@ -17,7 +18,7 @@ export default function MainLayout({ children }) {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [location.pathname]);
 
-  if (isAuthPage) {
+  if (isAuthPage || isPublicRoute(location.pathname)) {
     return <>{children}</>;
   }
 

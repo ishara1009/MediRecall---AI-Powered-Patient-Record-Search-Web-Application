@@ -38,6 +38,12 @@ import BookAppointment from '../pages/User/BookAppointment';
 import Appointments from '../pages/User/Appointments';
 import DoctorProfile from '../pages/User/DoctorProfile';
 import MedicalRecords from '../pages/User/MedicalRecords';
+import Home from '../pages/Home/Home';
+import PublicLayout from '../components/Public/PublicLayout';
+import Features from '../pages/PublicPages/Features';
+import HowItWorks from '../pages/PublicPages/HowItWorks';
+import PublicDoctors from '../pages/PublicPages/Doctors';
+import PublicDoctorProfile from '../pages/PublicPages/PublicDoctorProfile';
 
 export default function AppRoutes() {
   const { adminExists, loading, user, token } = useContext(AuthContext);
@@ -79,17 +85,14 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* ─── Auth Routes ─────────────────────────────────────── */}
-      {/* If no admin exists, redirect root to setup; otherwise show login */}
-      <Route
-        path="/"
-        element={
-          user && token
-            ? <Navigate to={getUserDashboardPath()} replace />
-            : adminExists
-              ? <Navigate to="/login" replace />
-              : <Navigate to="/setup" replace />
-        }
-      />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/doctors" element={<PublicDoctors />} />
+        <Route path="/doctors/:doctorId" element={<PublicDoctorProfile />} />
+      </Route>
       <Route
         path="/login"
         element={
@@ -278,7 +281,6 @@ export default function AppRoutes() {
       />
 
       {/* ─── Legacy / Fallback Routes ─────────────────────────── */}
-      <Route path="/about" element={<About />} />
       {/* Catch-all: redirect to root */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -1,98 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getDocuments, checkHealth } from '../../api/api';
+import { getPublicDoctors } from '../../api/api';
+import hospital from '../../config/hospitalInfo';
+import { DoctorCard, SectionHeader, setPublicMeta } from '../../components/Public/PublicLayout';
 import './Home.css';
 
-export default function Home() {
-  const [docs, setDocs] = useState([]);
-  const [health, setHealth] = useState(null);
+const features = [
+  ['01','Find Healthcare Professionals','Browse active doctors and search by specialization.'],['02','Appointment Booking','Choose a healthcare professional, available date and time.'],['03','Patient Medical Records','Keep medical documents and patient information organized.'],['04','AI-Powered Record Search','Authorized doctors can retrieve relevant record information.'],['05','Source-Based Assistance','Review AI answers with supporting medical-record sources.'],['06','Role-Based Access','Patients, doctors and administrators receive appropriate access.']
+];
 
-  useEffect(() => {
-    getDocuments().then(res => setDocs(res.data || [])).catch(() => {});
-    checkHealth().then(res => setHealth(res.data)).catch(() => {});
-  }, []);
-
-  return (
-    <div className="home-page fade-in">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-badge">AI-Powered Research Assistant</div>
-        <h1 className="hero-title">
-          Explore Research Papers with
-          <span className="gradient-text"> Advance RAG</span>
-        </h1>
-        <p className="hero-subtitle">
-          Upload your research papers. Ask questions. Get precise, context-grounded answers with source citations and confidence scores — powered by OpenAI GPT and ChromaDB.
-        </p>
-        <div className="hero-actions">
-          <Link to="/upload" id="hero-upload-btn" className="btn-primary hero-btn">
-            Upload Papers
-          </Link>
-          <Link to="/chat" id="hero-chat-btn" className="btn-secondary hero-btn">
-            Start Chatting
-          </Link>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-section">
-        <div className="stat-card glass">
-          <div className="stat-number">{docs.length}</div>
-          <div className="stat-label">Documents Indexed</div>
-        </div>
-        <div className="stat-card glass">
-          <div className="stat-number">GPT-4o</div>
-          <div className="stat-label">Language Model</div>
-        </div>
-        <div className="stat-card glass">
-          <div className="stat-number">Chroma</div>
-          <div className="stat-label">Vector Database</div>
-        </div>
-        <div className="stat-card glass">
-          <div className="stat-number">Top-5</div>
-          <div className="stat-label">Context Retrieval</div>
-        </div>
-      </section>
-
-      {/* Recent Documents */}
-      {docs.length > 0 && (
-        <section className="recent-section">
-          <div className="section-header">
-            <h2 className="section-title">Recent Documents</h2>
-            <Link to="/documents" className="section-link">View All</Link>
-          </div>
-          <div className="recent-list">
-            {docs.slice(0, 4).map(doc => (
-              <div key={doc._id} className="recent-item glass">
-                <div className="recent-info">
-                  <span className="recent-name">{doc.filename}</span>
-                  <span className="recent-meta">{doc.totalPages} pages</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Health Status */}
-      {health && (
-        <section className="health-section">
-          <div className="health-card glass">
-            <h3 className="health-title">System Status</h3>
-            <div className="health-items">
-              {Object.entries(health.services || {}).map(([svc, info]) => (
-                <div key={svc} className="health-item">
-                  <span className={`health-dot ${info.status === 'healthy' ? 'green' : 'red'}`}></span>
-                  <span className="health-svc">{svc}</span>
-                  <span className={`health-status ${info.status === 'healthy' ? 'ok' : 'err'}`}>
-                    {info.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-    </div>
-  );
+export default function Home(){
+  const [doctors,setDoctors]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState('');
+  const load=()=>{setLoading(true);setError('');getPublicDoctors().then(r=>setDoctors(r.data||[])).catch(()=>setError('Unable to load healthcare professionals.')).finally(()=>setLoading(false));};
+  useEffect(()=>{setPublicMeta('MediRecall | AI-Powered Healthcare Information Platform','Find doctors, manage healthcare appointments and access secure healthcare information through MediRecall.');load();},[]);
+  return <>
+    <section className="landing-hero"><div className="public-container hero-layout"><div><span className="public-eyebrow">AI-Powered Healthcare Information Platform</span><h1>Smarter Healthcare Starts with <em>Better Information</em></h1><p>MediRecall connects patients, healthcare professionals, appointments and medical records through one secure, intelligent healthcare platform.</p><div className="hero-public-actions"><Link className="public-outline" to="/doctors">Find a Doctor</Link><Link className="public-primary" to="/signup">Get Started</Link></div><small>Already have an account? <Link to="/login">Sign In</Link></small></div><div className="health-visual" aria-label="Healthcare information illustration"><div className="visual-main"><span className="medical-cross">+</span><h2>Connected Care</h2><p>Doctors · Appointments · Records</p></div><div className="visual-chip chip-one">Secure records</div><div className="visual-chip chip-two">Healthcare access</div><div className="visual-chip chip-three">AI-assisted search</div></div></div></section>
+    <section className="quick-contact"><div className="public-container public-grid">{[['Appointments',hospital.appointmentPhone,'Book or manage your appointment.'],['General Information',hospital.generalPhone,'Speak with our support team.'],['Emergency Contact',hospital.emergencyPhone,'Emergency contact information.']].map(([t,n,d])=><a className="contact-card" href={`tel:${n}`} key={t}><span>+</span><div><small>{t}</small><strong>{n}</strong><p>{d}</p></div></a>)}</div></section>
+    <section className="public-section public-container"><SectionHeader eyebrow="One connected platform" title="Healthcare Information, Connected" text="MediRecall brings healthcare services and medical information together in one secure platform. Patients can discover healthcare professionals and manage appointments, while authorized doctors can securely review relevant patient records."/></section>
+    <section className="public-section alt"><div className="public-container"><SectionHeader title="Everything You Need in One Place" text="Practical healthcare tools designed around patients and authorized professionals."/><div className="public-grid">{features.map(([i,t,d])=><article className="info-card" key={t}><div className="info-icon">{i}</div><h3>{t}</h3><p>{d}</p></article>)}</div></div></section>
+    <section className="public-section public-container"><SectionHeader eyebrow="Patient journey" title="Healthcare Made Simpler"/><div className="process-row">{['Create Your Account','Find a Doctor','Choose Date & Time','Book Your Appointment','Manage Your Healthcare'].map((t,i)=><article className="process-step" key={t}><b>{String(i+1).padStart(2,'0')}</b><h3>{t}</h3></article>)}</div><div className="center-link"><Link to="/how-it-works">Learn How MediRecall Works →</Link></div></section>
+    <section className="public-section alt"><div className="public-container"><SectionHeader title="Meet Our Healthcare Professionals" text="Browse active healthcare professionals at MediCare General Hospital."/>{loading?<div className="doctor-skeletons public-grid"><i/><i/><i/></div>:error?<div className="public-empty">{error}<br/><button onClick={load}>Try Again</button></div>:doctors.length?<div className="public-grid">{doctors.slice(0,3).map(d=><DoctorCard doctor={d} key={d._id}/>)}</div>:<div className="public-empty">No healthcare professionals are available at this time.</div>}<div className="center-link"><Link to="/doctors">View All Doctors →</Link></div></div></section>
+    <section className="public-section public-container ai-public"><div><span className="public-eyebrow">Responsible AI assistance</span><h2>Find Important Medical Information Faster</h2><p>MediRecall helps authorized healthcare professionals search patient records using natural-language questions and review relevant supporting source material.</p><strong>AI-generated information supports healthcare professionals and should be professionally reviewed.</strong></div><div className="flow-stack">{['Patient Records','Secure Search','Relevant Information','AI-Assisted Summary','Doctor Review'].map(x=><span key={x}>{x}</span>)}</div></section>
+    <section className="public-section alt"><div className="public-container"><SectionHeader title="Built with Privacy and Security in Mind"/><div className="public-grid security-grid">{[['Role-Based Access','Access is based on each user’s role and permissions.'],['Protected Medical Information','Sensitive information remains behind authenticated access.'],['Activity Tracking','Important system actions can be recorded for accountability.'],['Evidence-Based AI','Responses are grounded in available patient records.']].map(([t,d],i)=><article className="info-card" key={t}><div className="info-icon">{i+1}</div><h3>{t}</h3><p>{d}</p></article>)}</div></div></section>
+    <section className="public-section public-container"><SectionHeader title="Designed for Every Healthcare Role"/><div className="public-grid">{[['For Patients',['Find doctors','Book and manage appointments','View permitted healthcare records']],['For Doctors',['Access authorized patient records','Manage appointment requests','Use AI-assisted record retrieval']],['For Administrators',['Manage doctors and documents','Review system activity','Maintain healthcare information']]].map(([t,items])=><article className="audience-card" key={t}><h3>{t}</h3><ul>{items.map(x=><li key={x}>{x}</li>)}</ul></article>)}</div></section>
+    <section className="public-section public-container"><div className="public-cta"><h2>Your Healthcare Journey, Connected with MediRecall</h2><p>Find healthcare professionals, manage appointments and access healthcare services through one secure platform.</p><div className="public-actions"><Link className="public-primary" to="/signup">Get Started</Link><Link className="public-outline" to="/doctors">Find a Doctor</Link></div></div></section>
+  </>;
 }
