@@ -216,6 +216,31 @@ export const getUserDoctors = async () => {
   return response.data;
 };
 
+export const getUserDoctor = async (doctorId) => {
+  const response = await apiClient.get(`/user/doctors/${doctorId}`);
+  return response.data;
+};
+
+export const getAvailableAppointmentSlots = async (doctorId, date) => {
+  const response = await apiClient.get('/user/appointments/available-slots', { params: { doctorId, date } });
+  return response.data;
+};
+
+export const createAppointment = async (payload) => {
+  const response = await apiClient.post('/user/appointments', payload);
+  return response.data;
+};
+
+export const getMyAppointments = async () => {
+  const response = await apiClient.get('/user/appointments');
+  return response.data;
+};
+
+export const cancelMyAppointment = async (id) => {
+  const response = await apiClient.patch(`/user/appointments/${id}/cancel`);
+  return response.data;
+};
+
 
 // ==========================================
 // 4. Ingested Documents APIs

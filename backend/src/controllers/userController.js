@@ -14,4 +14,16 @@ const getDoctors = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors };
+const getDoctor = async (req, res) => {
+  try {
+    const doctor = await User.findOne({ role: 'Doctor', employeeId: req.params.doctorId.toUpperCase() })
+      .select('employeeId fullName email phoneNumber department doctorInformation medicalLicenseNumber profilePicture status')
+      .lean();
+    if (!doctor) return sendError(res, 'Doctor profile not found', 404);
+    return sendSuccess(res, doctor, 'Doctor profile retrieved successfully');
+  } catch (error) {
+    return sendError(res, 'Failed to fetch doctor profile', 500, error.message);
+  }
+};
+
+module.exports = { getDoctors, getDoctor };

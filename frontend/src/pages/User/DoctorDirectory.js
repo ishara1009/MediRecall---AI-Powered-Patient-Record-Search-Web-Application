@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getUserDoctors } from '../../api/api';
+import { EmptyState, PageHeader, Skeleton, StatusBadge } from '../../components/UI';
 import './DoctorDirectory.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
@@ -7,6 +9,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'
 export default function DoctorDirectory() {
   const [doctors, setDoctors] = useState([]);
   const [query, setQuery] = useState('');
+  const [specialization, setSpecialization] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -25,28 +28,27 @@ export default function DoctorDirectory() {
   }, []);
 
   const normalizedQuery = query.trim().toLowerCase();
+  const specializations = ['All', ...new Set(doctors.map((doctor) => doctor.department).filter(Boolean).sort())];
   const filteredDoctors = doctors.filter((doctor) =>
     [doctor.employeeId, doctor.fullName, doctor.email, doctor.phoneNumber,
       doctor.department, doctor.doctorInformation, doctor.medicalLicenseNumber, doctor.status]
       .some((value) => String(value || '').toLowerCase().includes(normalizedQuery))
-  );
+  ).filter((doctor) => specialization === 'All' || doctor.department === specialization);
 
   return (
     <div className="user-doctors fade-in">
-      <header className="user-doctors-header">
-        <div><span>MEDIRECALL DIRECTORY</span><h1>Our Doctors</h1><p>View registered doctor profiles and contact details.</p></div>
-        <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search doctors or specialization" aria-label="Search doctors" />
-      </header>
+      <PageHeader eyebrow="MediRecall directory" title="Find a Doctor" description="Browse available healthcare professionals and book your appointment." />
+      <div className="doctor-directory-filters"><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name, license or specialization" aria-label="Search doctors" /><select value={specialization} onChange={(e) => setSpecialization(e.target.value)} aria-label="Filter by specialization">{specializations.map((item) => <option key={item}>{item}</option>)}</select></div>
       {error && <div className="directory-error">{error}</div>}
-      {loading ? <div className="directory-state">Loading doctors...</div> : filteredDoctors.length === 0 ? (
-        <div className="directory-state glass">No doctors found.</div>
+      {loading ? <Skeleton cards={3} /> : filteredDoctors.length === 0 ? (
+        <EmptyState symbol="+" title="No doctors found" message="Try changing your search or specialization filter." />
       ) : (
         <div className="doctor-card-grid">
           {filteredDoctors.map((doctor) => (
             <article className="doctor-directory-card glass" key={doctor._id}>
               <div className="doctor-directory-top">
                 {doctor.profilePicture ? <img src={`${BACKEND_URL}${doctor.profilePicture}`} alt={doctor.fullName} /> : <div className="directory-avatar">{doctor.fullName?.slice(0, 2).toUpperCase()}</div>}
-                <div><h2>{doctor.fullName}</h2><p>{doctor.department}</p><span className={`directory-status ${doctor.status}`}>{doctor.status}</span></div>
+                <div><h2>{doctor.fullName}</h2><p>{doctor.department}</p><StatusBadge status={doctor.status} /></div>
               </div>
               <dl>
                 <div><dt>Doctor ID</dt><dd>{doctor.employeeId}</dd></div>
@@ -57,6 +59,7 @@ export default function DoctorDirectory() {
               {doctor.doctorInformation && (
                 <div className="doctor-information"><h3>Doctor Information</h3><p>{doctor.doctorInformation}</p></div>
               )}
+              <div className="doctor-directory-actions"><Link to={`/user/doctors/${doctor.employeeId}`}>View Profile</Link>{doctor.status === 'active' && <Link to="/user/book-appointment" state={{ doctorId: doctor._id }}>Book Appointment</Link>}</div>
             </article>
           ))}
         </div>

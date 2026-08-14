@@ -9,6 +9,7 @@ export default function Navbar() {
   const { user, logout, isAuthenticated } = useContext(AuthContext);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleLogout = async () => {
     setIsSigningOut(true);
@@ -33,6 +34,8 @@ export default function Navbar() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showLogoutDialog, isSigningOut]);
+
+  useEffect(() => { setProfileOpen(false); }, [location.pathname]);
 
   // Auth pages — show minimal navbar
   const authPages = ['/login', '/signup', '/forgot-password', '/setup'];
@@ -63,6 +66,7 @@ export default function Navbar() {
     if (user.role === 'User') {
       return [
         { path: '/user/dashboard', label: 'Dashboard' },
+        { path: '/user/appointments', label: 'Appointments' },
         { path: '/user/doctors', label: 'Doctors' }
       ];
     }
@@ -106,7 +110,7 @@ export default function Navbar() {
       <div className="navbar-right">
         {isAuthenticated && user ? (
           <div className="user-menu">
-            <Link to={profilePath} className="user-avatar-btn" title="My Profile">
+            <button type="button" className="user-avatar-btn" title="Open profile menu" aria-haspopup="menu" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>
               {user.profilePicture ? (
                 <img
                   src={`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}${user.profilePicture}`}
@@ -118,13 +122,12 @@ export default function Navbar() {
                   {user.fullName?.substring(0, 2).toUpperCase() || 'U'}
                 </div>
               )}
-            </Link>
+            </button>
             <div className="user-info-snippet">
               <span className="user-name-nav">{user.fullName?.split(' ')[0]}</span>
             </div>
-            <button className="logout-btn" onClick={() => setShowLogoutDialog(true)} title="Sign Out">
-              Sign Out
-            </button>
+            <button className="profile-chevron" aria-label="Toggle profile menu" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>⌄</button>
+            {profileOpen && <div className="profile-dropdown" role="menu"><div className="profile-dropdown-head"><strong>{user.fullName}</strong><span>{user.email}</span></div><Link role="menuitem" to={profilePath}>My Profile</Link>{user.role === 'User' && <Link role="menuitem" to="/user/appointments">My Appointments</Link>}<Link role="menuitem" to={profilePath}>Settings</Link><button role="menuitem" onClick={() => { setProfileOpen(false); setShowLogoutDialog(true); }}>Sign Out</button></div>}
           </div>
         ) : (
           !isAuthPage && (

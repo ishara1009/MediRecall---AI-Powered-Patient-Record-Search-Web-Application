@@ -5,6 +5,7 @@
 .user-doctors-header p { color: var(--text-muted); }
 .user-doctors-header input { min-width: 300px; padding: 12px 15px; color: var(--text-main); background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); outline: none; }
 .user-doctors-header input:focus { border-color: var(--border-glow); }
+.doctor-directory-filters{display:grid;grid-template-columns:1fr 240px;gap:12px;margin-bottom:24px;padding:12px;background:#fff;border:1px solid var(--border-color);border-radius:13px}.doctor-directory-filters input,.doctor-directory-filters select{padding:11px 13px;color:var(--text-main);background:#f8fafc;border:1px solid var(--border-color);border-radius:9px;font:inherit;outline:none}.doctor-directory-filters input:focus,.doctor-directory-filters select:focus{border-color:var(--border-glow)}
 .doctor-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px; }
 .doctor-directory-card { padding: 24px; }
 .doctor-directory-top { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
@@ -23,6 +24,7 @@
 .doctor-information { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-color); }
 .doctor-information h3 { margin-bottom: 7px; color: var(--text-indigo); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
 .doctor-information p { color: var(--text-muted); font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.doctor-directory-actions{display:flex;gap:9px;margin-top:18px}.doctor-directory-actions a{flex:1;padding:9px;text-align:center;border:1px solid #c7d2fe;border-radius:8px;font-size:11px;font-weight:800;text-decoration:none}.doctor-directory-actions a:last-child{color:#fff;background:var(--primary);border-color:var(--primary)}
 .directory-state { padding: 40px; text-align: center; color: var(--text-muted); }
 .directory-error { margin-bottom: 20px; padding: 13px; border: 1px solid rgba(239,68,68,.3); border-radius: 10px; color: #fca5a5; background: rgba(239,68,68,.1); }
-@media (max-width: 650px) { .user-doctors-header { align-items: stretch; flex-direction: column; } .user-doctors-header input { min-width: 0; width: 100%; } .doctor-card-grid { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .user-doctors-header { align-items: stretch; flex-direction: column; } .user-doctors-header input { min-width: 0; width: 100%; } .doctor-card-grid,.doctor-directory-filters { grid-template-columns: 1fr; } }

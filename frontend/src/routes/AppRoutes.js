@@ -29,6 +29,9 @@ import ChangePassword from '../pages/Doctor/ChangePassword';
 import PatientRecordSearch from '../pages/Doctor/PatientRecordSearch';
 import UserDashboard from '../pages/User/UserDashboard';
 import DoctorDirectory from '../pages/User/DoctorDirectory';
+import BookAppointment from '../pages/User/BookAppointment';
+import Appointments from '../pages/User/Appointments';
+import DoctorProfile from '../pages/User/DoctorProfile';
 
 export default function AppRoutes() {
   const { adminExists, loading, user, token } = useContext(AuthContext);
@@ -150,6 +153,12 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/user/book-appointment"
+        element={<ProtectedRoute><RoleRoute allowedRole="User"><BookAppointment /></RoleRoute></ProtectedRoute>}
+      />
+      <Route path="/user/appointments" element={<ProtectedRoute><RoleRoute allowedRole="User"><Appointments /></RoleRoute></ProtectedRoute>} />
+      <Route path="/user/doctors/:doctorId" element={<ProtectedRoute><RoleRoute allowedRole="User"><DoctorProfile /></RoleRoute></ProtectedRoute>} />
 
       {/* ─── Admin Routes ─────────────────────────────────────── */}
       <Route

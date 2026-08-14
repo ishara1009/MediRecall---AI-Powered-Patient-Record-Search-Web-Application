@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDoctors, updateDoctor, deleteDoctor, toggleDoctorStatus, resetDoctorPassword } from '../../api/api';
+import { ConfirmDialog } from '../../components/UI';
 import './DoctorManagement.css';
 
 export default function DoctorManagement() {
@@ -13,6 +14,8 @@ export default function DoctorManagement() {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   
   // Doctor form edit parameters
   const [editForm, setEditForm] = useState({
@@ -65,20 +68,23 @@ export default function DoctorManagement() {
     }
   };
 
-  const handleDelete = async (doctor) => {
-    if (!window.confirm(`Are you absolutely sure you want to delete doctor account "${doctor.fullName}"? All his chatbot sessions and history will be permanently deleted.`)) {
-      return;
-    }
+  const handleDelete = async () => {
+    const doctor = deleteTarget;
+    if (!doctor) return;
+    setDeleting(true);
     setError('');
     setSuccess('');
     try {
       const res = await deleteDoctor(doctor._id);
       if (res.success) {
         setSuccess(`Doctor "${doctor.fullName}" deleted successfully.`);
+        setDeleteTarget(null);
         fetchDocs();
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete doctor.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -252,7 +258,7 @@ export default function DoctorManagement() {
                       <button onClick={() => openResetModal(doc)} className="action-icon-btn reset-btn" title="Reset Password">
                         Reset Pwd
                       </button>
-                      <button onClick={() => handleDelete(doc)} className="action-icon-btn delete-btn" title="Delete Doctor">
+                      <button onClick={() => setDeleteTarget(doc)} className="action-icon-btn delete-btn" title="Delete Doctor">
                         Delete
                       </button>
                     </div>
@@ -416,6 +422,16 @@ export default function DoctorManagement() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete doctor account?"
+        message={deleteTarget ? `This permanently deletes ${deleteTarget.fullName} and their related consultation history. This action cannot be undone.` : ''}
+        confirmLabel="Delete Doctor"
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        busy={deleting}
+      />
 
     </div>
   );
