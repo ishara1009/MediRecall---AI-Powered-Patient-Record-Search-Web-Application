@@ -1,8 +1,8 @@
-.signup-page { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background: #f4f7fb radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,.12), transparent 60%); }
+.signup-page { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background-color: #172033; background-image: linear-gradient(110deg, rgba(14,24,43,.78), rgba(36,43,92,.52)), url("../../images/hospital images/7.jpg"); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
 .signup-wrap { width: min(100%, 650px); }
-.signup-brand { display: block; margin-bottom: 24px; text-align: center; color: #172033; font: 800 22px 'Outfit', sans-serif; text-decoration: none; }
-.signup-brand span, .signup-login a { color: #818cf8; }
-.signup-card { padding: 34px; background: #fff; border: 1px solid #dfe5ef; border-radius: 16px; box-shadow: 0 24px 48px rgba(15,23,42,.1); }
+.signup-brand { display: block; margin-bottom: 24px; text-align: center; color: #fff; font: 800 22px 'Outfit', sans-serif; text-decoration: none; text-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.signup-brand span, .signup-login a { color: #aaa6ff; }
+.signup-card { padding: 34px; background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.72); border-radius: 16px; box-shadow: 0 24px 55px rgba(6,13,28,.32); backdrop-filter: blur(10px); }
 .signup-card header { margin-bottom: 24px; }
 .signup-card h1 { font-size: 24px; color: #172033; }
 .signup-card header p, .password-hint { margin-top: 5px; color: #6b7280; font-size: 13px; }
@@ -22,4 +22,4 @@
 .password-hint { margin-top: -10px; line-height: 1.5; }
 .signup-login { margin-top: 22px; text-align: center; color: #6b7280; font-size: 13px; }
 .signup-login a { text-decoration: none; font-weight: 600; }
-@media (max-width: 600px) { .signup-card { padding: 25px 20px; } .signup-grid { grid-template-columns: 1fr; } .signup-grid .wide { grid-column: auto; } }
+@media (max-width: 600px) { .signup-page { background-attachment: scroll; background-position: 45% center; } .signup-card { padding: 25px 20px; } .signup-grid { grid-template-columns: 1fr; } .signup-grid .wide { grid-column: auto; } }

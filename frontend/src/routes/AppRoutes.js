@@ -92,19 +92,15 @@ export default function AppRoutes() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/doctors" element={<PublicDoctors />} />
         <Route path="/doctors/:doctorId" element={<PublicDoctorProfile />} />
+        <Route
+          path="/login"
+          element={user && token ? <Navigate to={getUserDashboardPath()} replace /> : <Login />}
+        />
+        <Route
+          path="/signup"
+          element={user && token ? <Navigate to={getUserDashboardPath()} replace /> : <Signup />}
+        />
       </Route>
-      <Route
-        path="/login"
-        element={
-          user && token
-            ? <Navigate to={getUserDashboardPath()} replace />
-            : <Login />
-        }
-      />
-      <Route
-        path="/signup"
-        element={user && token ? <Navigate to={getUserDashboardPath()} replace /> : <Signup />}
-      />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       {/* Setup admin is only accessible if no admin exists yet */}
       <Route

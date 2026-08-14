@@ -2,9 +2,9 @@
 .login-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 36px 16px 48px;
   background-color: #172033;
   background-image:
     linear-gradient(110deg, rgba(14, 24, 43, 0.82), rgba(36, 43, 92, 0.56)),
@@ -321,6 +321,7 @@
   .login-page {
     background-attachment: scroll;
     background-position: 52% center;
+    padding-top: 24px;
   }
 
   .login-card {
