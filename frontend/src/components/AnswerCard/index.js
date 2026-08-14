@@ -3,43 +3,12 @@ import SourceCard from '../SourceCard';
 import './AnswerCard.css';
 
 export default function AnswerCard({ data }) {
-  const [copied, setCopied] = useState(false);
   const [showContext, setShowContext] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(data.answer);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const confidenceColor = data.confidence_score >= 75
-    ? 'var(--accent-green)'
-    : data.confidence_score >= 40
-    ? 'var(--accent-amber)'
-    : 'var(--accent-error)';
 
   return (
     <div className="answer-card">
-      <div className="answer-header">
-        <div className="answer-badge">
-          <span>Record Summary</span>
-        </div>
-        <div className="answer-actions">
-          <div
-            className="confidence-badge"
-            style={{ borderColor: `${confidenceColor}40`, color: confidenceColor }}
-          >
-            <span>Evidence: {data.evidence_coverage || 'Limited'}</span>
-          </div>
-          <button id="copy-answer-btn" className="copy-btn" onClick={handleCopy}>
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
-      </div>
-
       <div className="answer-body">
         <p className="answer-text">{data.answer}</p>
-        <p className="ai-safety-note">AI-generated record summary. Review this information against the cited patient records before clinical use.</p>
       </div>
 
       <SourceCard sources={data.sources} />

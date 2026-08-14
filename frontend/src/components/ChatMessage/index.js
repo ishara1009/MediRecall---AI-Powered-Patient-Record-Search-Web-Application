@@ -13,7 +13,6 @@ export default function ChatMessage({ message }) {
         </div>
       ) : (
         <div className="ai-response">
-          <div className="ai-avatar"></div>
           <div className="ai-content">
             <AnswerCard data={message.data} />
           </div>
