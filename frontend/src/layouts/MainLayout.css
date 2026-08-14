@@ -28,3 +28,7 @@
 }
 
 .main-content.chat-main.has-chat-sidebar { margin-left: var(--sidebar-width); }
+
+@media (max-width: 768px) {
+  .main-content { padding: 24px 18px; }
+}

@@ -1,5 +1,5 @@
 .doc-mgmt-container {
-  padding: 40px 20px;
+  padding: 0;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -22,6 +22,8 @@
   display: flex;
   gap: 15px;
 }
+
+.add-doctor-link { padding: 10px 16px; text-decoration: none; white-space: nowrap; }
 
 .search-input-field {
   background: var(--bg-input);
@@ -352,6 +354,23 @@
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
+
+.modal-wide-field { grid-column: 1 / -1; }
+
+.modal-fields textarea {
+  resize: vertical;
+  min-height: 110px;
+  padding: 12px 14px;
+  color: var(--text-main);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  line-height: 1.5;
+  outline: none;
+}
+
+.modal-fields textarea:focus { border-color: var(--border-glow); }
 
 @media (max-width: 500px) {
   .modal-fields {

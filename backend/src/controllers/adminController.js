@@ -19,6 +19,7 @@ const createDoctor = async (req, res) => {
     medicalLicenseNumber,
     employeeId,
     department,
+    doctorInformation,
     email,
     phoneNumber,
     temporaryPassword
@@ -60,9 +61,14 @@ const createDoctor = async (req, res) => {
       return sendError(res, 'A user with this email address already exists', 400);
     }
 
-    const duplicateEmployee = await User.findOne({ employeeId });
+    const normalizedDoctorId = employeeId.trim().toUpperCase();
+    if (!/^DOC-[A-Z0-9-]+$/.test(normalizedDoctorId)) {
+      return sendError(res, 'Doctor ID must start with DOC- and contain only letters, numbers or hyphens', 400);
+    }
+
+    const duplicateEmployee = await User.findOne({ employeeId: normalizedDoctorId });
     if (duplicateEmployee) {
-      return sendError(res, 'A user with this Employee ID already exists', 400);
+      return sendError(res, 'A user with this Doctor ID already exists', 400);
     }
 
     const duplicateLicense = await User.findOne({ medicalLicenseNumber });
@@ -80,8 +86,9 @@ const createDoctor = async (req, res) => {
     const doctor = new User({
       fullName,
       medicalLicenseNumber,
-      employeeId,
+      employeeId: normalizedDoctorId,
       department,
+      doctorInformation: doctorInformation ? doctorInformation.trim() : '',
       email,
       phoneNumber,
       password: temporaryPassword, // Hashed in pre-save hooks
@@ -99,10 +106,12 @@ const createDoctor = async (req, res) => {
       req.user.fullName,
       req.user.role,
       'CREATE_DOCTOR',
-      `Registered doctor account: "${fullName}" (ID: ${employeeId}, License: ${medicalLicenseNumber})`
+      `Registered doctor account: "${fullName}" (ID: ${normalizedDoctorId}, License: ${medicalLicenseNumber})`
     );
 
-    return sendSuccess(res, doctor, 'Doctor account created successfully', 201);
+    const safeDoctor = doctor.toObject();
+    delete safeDoctor.password;
+    return sendSuccess(res, safeDoctor, 'Doctor account created successfully', 201);
   } catch (error) {
     return sendError(res, 'Failed to create Doctor account', 500, error.message);
   }
@@ -114,7 +123,7 @@ const createDoctor = async (req, res) => {
 const getDoctors = async (req, res) => {
   try {
     // Return all doctors sorted by newest
-    const doctors = await User.find({ role: 'Doctor' }).sort({ createdAt: -1 });
+    const doctors = await User.find({ role: 'Doctor' }).select('-password').sort({ createdAt: -1 });
     return sendSuccess(res, doctors, 'Doctors retrieved successfully');
   } catch (error) {
     return sendError(res, 'Failed to fetch doctors', 500, error.message);
@@ -126,7 +135,7 @@ const getDoctors = async (req, res) => {
  */
 const updateDoctor = async (req, res) => {
   const { id } = req.params;
-  const { fullName, medicalLicenseNumber, department, email, phoneNumber } = req.body;
+  const { fullName, medicalLicenseNumber, department, doctorInformation, email, phoneNumber } = req.body;
 
   try {
     const doctor = await User.findOne({ _id: id, role: 'Doctor' });
@@ -158,6 +167,7 @@ const updateDoctor = async (req, res) => {
 
     if (fullName) doctor.fullName = fullName;
     if (department) doctor.department = department;
+    if (doctorInformation !== undefined) doctor.doctorInformation = doctorInformation.trim();
     
     if (phoneNumber) {
       if (!isValidPhoneNumber(phoneNumber)) {
@@ -181,7 +191,9 @@ const updateDoctor = async (req, res) => {
       `Modified doctor parameters for: "${doctor.fullName}" (ID: ${doctor.employeeId})`
     );
 
-    return sendSuccess(res, doctor, 'Doctor account updated successfully');
+    const safeDoctor = doctor.toObject();
+    delete safeDoctor.password;
+    return sendSuccess(res, safeDoctor, 'Doctor account updated successfully');
   } catch (error) {
     return sendError(res, 'Failed to update doctor account', 500, error.message);
   }

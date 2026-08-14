@@ -28,6 +28,7 @@ import DoctorDashboard from '../pages/Doctor/DoctorDashboard';
 import ChangePassword from '../pages/Doctor/ChangePassword';
 import PatientRecordSearch from '../pages/Doctor/PatientRecordSearch';
 import UserDashboard from '../pages/User/UserDashboard';
+import DoctorDirectory from '../pages/User/DoctorDirectory';
 
 export default function AppRoutes() {
   const { adminExists, loading, user, token } = useContext(AuthContext);
@@ -138,6 +139,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <RoleRoute allowedRole="User"><UserDashboard /></RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user/doctors"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRole="User"><DoctorDirectory /></RoleRoute>
           </ProtectedRoute>
         }
       />

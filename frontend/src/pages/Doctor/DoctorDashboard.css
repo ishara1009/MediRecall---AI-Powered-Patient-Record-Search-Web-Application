@@ -1,5 +1,5 @@
 .doctor-dashboard {
-  padding: 40px 20px;
+  padding: 0;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -67,7 +67,7 @@
   color: var(--text-main);
   line-height: 1.1;
   font-family: 'Outfit', sans-serif;
-  background: linear-gradient(135deg, #fff 30%, var(--text-indigo) 100%);
+  background: linear-gradient(135deg, #172033 30%, #4f46e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

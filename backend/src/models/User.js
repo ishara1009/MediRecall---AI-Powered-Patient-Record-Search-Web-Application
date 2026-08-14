@@ -69,6 +69,12 @@ const UserSchema = new mongoose.Schema({
     ],
     trim: true
   },
+  doctorInformation: {
+    type: String,
+    trim: true,
+    maxlength: [2000, 'Doctor information cannot exceed 2000 characters'],
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now

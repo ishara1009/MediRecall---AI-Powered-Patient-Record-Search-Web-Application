@@ -13,6 +13,7 @@ export default function CreateDoctor() {
     employeeId: '',
     medicalLicenseNumber: '',
     department: '',
+    doctorInformation: '',
     temporaryPassword: ''
   });
 
@@ -66,7 +67,7 @@ export default function CreateDoctor() {
     setSuccess('');
     setLoading(true);
 
-    const { fullName, email, phoneNumber, employeeId, medicalLicenseNumber, department, temporaryPassword } = formData;
+    const { fullName, email, phoneNumber, employeeId, medicalLicenseNumber, department, doctorInformation, temporaryPassword } = formData;
 
     // Standard client checks
     if (!fullName || !email || !phoneNumber || !employeeId || !medicalLicenseNumber || !department || !temporaryPassword) {
@@ -86,9 +87,10 @@ export default function CreateDoctor() {
       data.append('fullName', fullName.trim());
       data.append('email', email.trim());
       data.append('phoneNumber', phoneNumber.trim());
-      data.append('employeeId', employeeId.trim());
+      data.append('employeeId', employeeId.trim().toUpperCase());
       data.append('medicalLicenseNumber', medicalLicenseNumber.trim());
       data.append('department', department.trim());
+      data.append('doctorInformation', doctorInformation.trim());
       data.append('temporaryPassword', temporaryPassword);
       if (profilePicture) {
         data.append('profilePicture', profilePicture);
@@ -186,14 +188,16 @@ export default function CreateDoctor() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="employeeId">Employee ID</label>
+              <label htmlFor="employeeId">Doctor ID</label>
               <input
                 type="text"
                 id="employeeId"
                 name="employeeId"
                 value={formData.employeeId}
                 onChange={handleInputChange}
-                placeholder="e.g. DR-8091"
+                placeholder="e.g. DOC-001"
+                pattern="DOC-[A-Za-z0-9-]+"
+                title="Doctor ID must start with DOC-"
                 required
               />
             </div>
@@ -212,16 +216,30 @@ export default function CreateDoctor() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="department">Assigned Department</label>
+              <label htmlFor="department">Specialization</label>
               <input
                 type="text"
                 id="department"
                 name="department"
                 value={formData.department}
                 onChange={handleInputChange}
-                placeholder="e.g. Cardiology"
+                placeholder="e.g. Cardiologist"
                 required
               />
+            </div>
+
+            <div className="form-group pwd-group">
+              <label htmlFor="doctorInformation">Doctor Information</label>
+              <textarea
+                id="doctorInformation"
+                name="doctorInformation"
+                value={formData.doctorInformation}
+                onChange={handleInputChange}
+                placeholder="Enter qualifications, experience, languages, consultation details, or a short professional biography"
+                rows="5"
+                maxLength="2000"
+              />
+              <span className="field-hint">Optional · {formData.doctorInformation.length}/2000 characters</span>
             </div>
 
             <div className="form-group pwd-group">

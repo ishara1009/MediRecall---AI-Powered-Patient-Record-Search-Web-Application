@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getDoctors, updateDoctor, deleteDoctor, toggleDoctorStatus, resetDoctorPassword } from '../../api/api';
 import './DoctorManagement.css';
 
@@ -19,7 +20,8 @@ export default function DoctorManagement() {
     email: '',
     phoneNumber: '',
     medicalLicenseNumber: '',
-    department: ''
+    department: '',
+    doctorInformation: ''
   });
   const [editFile, setEditFile] = useState(null);
   const [editPreviewUrl, setEditPreviewUrl] = useState('');
@@ -88,7 +90,8 @@ export default function DoctorManagement() {
       email: doctor.email || '',
       phoneNumber: doctor.phoneNumber || '',
       medicalLicenseNumber: doctor.medicalLicenseNumber || '',
-      department: doctor.department || ''
+      department: doctor.department || '',
+      doctorInformation: doctor.doctorInformation || ''
     });
     setEditPreviewUrl(doctor.profilePicture ? `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}${doctor.profilePicture}` : '');
     setEditFile(null);
@@ -119,6 +122,7 @@ export default function DoctorManagement() {
       formData.append('phoneNumber', editForm.phoneNumber.trim());
       formData.append('medicalLicenseNumber', editForm.medicalLicenseNumber.trim());
       formData.append('department', editForm.department.trim());
+      formData.append('doctorInformation', editForm.doctorInformation.trim());
       if (editFile) {
         formData.append('profilePicture', editFile);
       }
@@ -174,6 +178,7 @@ export default function DoctorManagement() {
           <p className="subtitle">Manage physician profiles, status, credentials and access logs</p>
         </div>
         <div className="actions-header">
+          <Link to="/admin/create-doctor" className="btn-primary add-doctor-link">Add Doctor</Link>
           <input
             type="text"
             placeholder="Search by name, ID, department..."
@@ -201,9 +206,9 @@ export default function DoctorManagement() {
             <thead>
               <tr>
                 <th>Profile</th>
-                <th>Employee ID</th>
+                <th>Doctor ID</th>
                 <th>Medical License</th>
-                <th>Department</th>
+                <th>Specialization</th>
                 <th>Status</th>
                 <th className="cell-actions">Actions</th>
               </tr>
@@ -329,13 +334,24 @@ export default function DoctorManagement() {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Assigned Department</label>
+                  <label>Specialization</label>
                   <input
                     type="text"
                     value={editForm.department}
                     onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
                     required
                   />
+                </div>
+                <div className="form-group modal-wide-field">
+                  <label>Doctor Information</label>
+                  <textarea
+                    value={editForm.doctorInformation}
+                    onChange={(e) => setEditForm({ ...editForm, doctorInformation: e.target.value })}
+                    rows="5"
+                    maxLength="2000"
+                    placeholder="Professional biography, qualifications and consultation information"
+                  />
+                  <span className="field-hint">{editForm.doctorInformation.length}/2000 characters</span>
                 </div>
               </div>
 

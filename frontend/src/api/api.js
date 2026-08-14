@@ -210,6 +210,12 @@ export const getDoctorStats = async () => {
   return response.data;
 };
 
+// Read-only physician directory for personal users
+export const getUserDoctors = async () => {
+  const response = await apiClient.get('/user/doctors');
+  return response.data;
+};
+
 
 // ==========================================
 // 4. Ingested Documents APIs

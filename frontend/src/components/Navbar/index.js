@@ -61,7 +61,10 @@ export default function Navbar() {
     }
 
     if (user.role === 'User') {
-      return [{ path: '/user/dashboard', label: 'Dashboard' }];
+      return [
+        { path: '/user/dashboard', label: 'Dashboard' },
+        { path: '/user/doctors', label: 'Doctors' }
+      ];
     }
 
     return [];
