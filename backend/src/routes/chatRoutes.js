@@ -19,7 +19,8 @@ router.post(
       .trim()
       .notEmpty()
       .withMessage('Document ID cannot be empty')
-      .isString()
+      .isString(),
+    body('patientId').trim().notEmpty().withMessage('Patient scope is required').isString()
   ],
   chatController.queryChat
 );

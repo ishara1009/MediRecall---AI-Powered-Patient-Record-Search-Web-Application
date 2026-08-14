@@ -4,13 +4,9 @@ const Counter = require('../models/Counter');
 const User = require('../models/User');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAuditEvent } = require('../utils/auditLogger');
-
-const TIME_SLOTS = [
-  '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
-  '11:00 AM', '11:30 AM', '01:00 PM', '01:30 PM',
-  '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM',
-  '04:00 PM', '04:30 PM'
-];
+const DoctorAvailability = require('../models/DoctorAvailability');
+const DoctorBlockedDate = require('../models/DoctorBlockedDate');
+const { createNotification } = require('../services/notificationService');
 
 const isValidDate = (date) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return false;
@@ -19,6 +15,23 @@ const isValidDate = (date) => {
 };
 
 const todayString = () => new Date().toISOString().slice(0, 10);
+
+const toDisplayTime = (minutes) => {
+  const hour24 = Math.floor(minutes / 60); const minute = minutes % 60;
+  const suffix = hour24 >= 12 ? 'PM' : 'AM'; const hour12 = hour24 % 12 || 12;
+  return `${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${suffix}`;
+};
+const minutesFor = (time) => { const [hour, minute] = time.split(':').map(Number); return hour * 60 + minute; };
+const getGeneratedSlots = async (doctorId, date) => {
+  if (await DoctorBlockedDate.exists({ doctor: doctorId, date })) return [];
+  const day = new Date(`${date}T00:00:00.000Z`).getUTCDay();
+  let schedule = await DoctorAvailability.findOne({ doctor: doctorId, dayOfWeek: day }).lean();
+  if (!schedule) schedule = { startTime: '09:00', endTime: '17:00', slotDuration: 30, isAvailable: day >= 1 && day <= 5 };
+  if (!schedule.isAvailable) return [];
+  const slots = []; const start = minutesFor(schedule.startTime); const end = minutesFor(schedule.endTime);
+  for (let value = start; value + schedule.slotDuration <= end; value += schedule.slotDuration) slots.push(toDisplayTime(value));
+  return slots;
+};
 
 const serializeAppointment = (appointment) => ({
   id: appointment._id,
@@ -45,9 +58,10 @@ const getAvailableSlots = async (req, res) => {
     const doctor = await User.findOne({ _id: doctorId, role: 'Doctor', status: 'active' }).select('_id');
     if (!doctor) return sendError(res, 'Selected doctor is not available', 404);
 
-    const booked = await Appointment.find({ doctor: doctorId, appointmentDate: date, status: { $ne: 'Cancelled' } })
+    const generated = await getGeneratedSlots(doctorId, date);
+    const booked = await Appointment.find({ doctor: doctorId, appointmentDate: date, status: { $nin: ['Cancelled', 'Rejected'] } })
       .distinct('appointmentTime');
-    return sendSuccess(res, { slots: TIME_SLOTS.filter((slot) => !booked.includes(slot)) }, 'Available slots retrieved successfully');
+    return sendSuccess(res, { slots: generated.filter((slot) => !booked.includes(slot)) }, 'Available slots retrieved successfully');
   } catch (error) {
     return sendError(res, 'Failed to retrieve appointment times', 500, error.message);
   }
@@ -61,7 +75,8 @@ const createAppointment = async (req, res) => {
     if (!isValidDate(appointmentDate) || appointmentDate < todayString()) {
       return sendError(res, 'Appointment date must be today or a future date', 400);
     }
-    if (!TIME_SLOTS.includes(appointmentTime)) return sendError(res, 'Please select a valid appointment time', 400);
+    const validSlots = await getGeneratedSlots(doctorId, appointmentDate);
+    if (!validSlots.includes(appointmentTime)) return sendError(res, 'This time is outside the doctor’s availability', 400);
 
     const reason = String(reasonForVisit || '').trim();
     if (reason.length < 3) return sendError(res, 'Reason for visit must contain at least 3 characters', 400);
@@ -75,7 +90,7 @@ const createAppointment = async (req, res) => {
       doctor: doctor._id,
       appointmentDate,
       appointmentTime,
-      status: { $ne: 'Cancelled' }
+      status: { $nin: ['Cancelled', 'Rejected'] }
     });
     if (conflict) return sendError(res, 'This appointment time has already been booked. Please choose another time.', 409);
 
@@ -101,6 +116,7 @@ const createAppointment = async (req, res) => {
     ]);
 
     await logAuditEvent(req, req.user._id, req.user.fullName, req.user.role, 'CREATE_APPOINTMENT', `Booked ${appointmentId} with ${doctor.fullName}.`);
+    await createNotification({ recipient: doctor._id, type: 'APPOINTMENT_CREATED', title: 'New appointment request', message: `${req.user.fullName} requested ${appointmentDate} at ${appointmentTime}.`, resourceKind: 'Appointment', resourceId: appointment._id, emailTemplate: 'appointment-created' });
     return sendSuccess(res, serializeAppointment(appointment), 'Appointment booked successfully. Your appointment is currently pending confirmation.', 201);
   } catch (error) {
     if (error?.code === 11000) return sendError(res, 'This appointment time has already been booked. Please choose another time.', 409);
@@ -124,6 +140,7 @@ const cancelAppointment = async (req, res) => {
       { path: 'doctor', select: 'employeeId fullName department' }
     ]);
     await logAuditEvent(req, req.user._id, req.user.fullName, req.user.role, 'CANCEL_APPOINTMENT', `Cancelled ${appointment.appointmentId}.`);
+    await createNotification({ recipient: appointment.doctor._id, type: 'APPOINTMENT_CANCELLED', title: 'Appointment cancelled', message: `${appointment.appointmentId} was cancelled by the patient.`, resourceKind: 'Appointment', resourceId: appointment._id, emailTemplate: 'appointment-cancelled' });
     return sendSuccess(res, serializeAppointment(appointment), 'Appointment cancelled successfully');
   } catch (error) {
     return sendError(res, 'Failed to cancel appointment', 500, error.message);
@@ -142,4 +159,4 @@ const getMyAppointments = async (req, res) => {
   }
 };
 
-module.exports = { TIME_SLOTS, getAvailableSlots, createAppointment, getMyAppointments, cancelAppointment };
+module.exports = { getGeneratedSlots, getAvailableSlots, createAppointment, getMyAppointments, cancelAppointment };

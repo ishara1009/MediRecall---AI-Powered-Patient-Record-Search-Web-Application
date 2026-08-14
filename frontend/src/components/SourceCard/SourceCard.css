@@ -39,6 +39,7 @@
   padding: 4px 10px;
   font-size: 12px;
   transition: transform .2s ease, border-color .2s ease;
+  text-decoration: none;
 }
 .source-item:hover { transform: translateY(-2px); border-color: rgba(129,140,248,.45); }
 

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAuditEvent } = require('../utils/auditLogger');
+const { ensurePatientForUser } = require('../services/patientService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'medirecall_super_secret_key_12345!';
 
@@ -177,6 +178,8 @@ const signup = async (req, res) => {
       profilePicture: req.file ? `/uploads/${req.file.filename}` : '',
       isFirstLogin: false
     });
+
+    await ensurePatientForUser(user);
 
     await logAuditEvent(req, user._id, user.fullName, user.role, 'USER_SIGNUP', 'A new personal account was registered.');
     return sendSuccess(res, null, 'Account created successfully. You can now sign in.', 201);

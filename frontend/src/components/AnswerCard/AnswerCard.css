@@ -73,6 +73,7 @@
   white-space: pre-wrap;
   letter-spacing: .005em;
 }
+.ai-safety-note{margin-top:14px;padding:10px 12px;color:#596579;background:#f8fafc;border-left:3px solid var(--primary);font-size:10px;line-height:1.55}
 
 .context-section {
   margin-top: 12px;

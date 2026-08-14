@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { updateProfile, changePassword } from '../../api/api';
+import { updateProfile, changePassword, getMyPatientProfile, updateMyPatientProfile } from '../../api/api';
 import './Profile.css';
 
 export default function Profile() {
@@ -17,6 +17,7 @@ export default function Profile() {
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
+  const [patientData, setPatientData] = useState({ patientId: '', dateOfBirth: '', gender: '', bloodGroup: 'Unknown' });
 
   // Password data states
   const [passwordData, setPasswordData] = useState({
@@ -46,6 +47,19 @@ export default function Profile() {
       });
       setPreviewUrl(user.profilePicture ? `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}${user.profilePicture}` : '');
     }
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.role !== 'User') return;
+    getMyPatientProfile().then((res) => {
+      const patient = res.data;
+      setPatientData({
+        patientId: patient.patientId || '',
+        dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.slice(0, 10) : '',
+        gender: patient.gender || '',
+        bloodGroup: patient.bloodGroup || 'Unknown'
+      });
+    }).catch(() => setProfileError('Unable to load clinical profile details.'));
   }, [user]);
 
   // Profile fields handler
@@ -87,6 +101,10 @@ export default function Profile() {
       }
 
       const res = await updateProfile(data);
+
+      if (user?.role === 'User') {
+        await updateMyPatientProfile({ dateOfBirth: patientData.dateOfBirth, gender: patientData.gender, bloodGroup: patientData.bloodGroup });
+      }
 
       if (res.success && res.data) {
         setProfileSuccess('Profile updated successfully!');
@@ -219,6 +237,31 @@ export default function Profile() {
                   <div className="form-group inline-group">
                     <label>Assigned Department</label>
                     <input type="text" value={user?.department || ''} disabled className="disabled-input" />
+                  </div>
+                </>
+              )}
+
+              {user?.role === 'User' && (
+                <>
+                  <div className="form-group inline-group">
+                    <label>Patient ID</label>
+                    <input type="text" value={patientData.patientId} disabled className="disabled-input" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="dateOfBirth">Date of Birth</label>
+                    <input id="dateOfBirth" type="date" value={patientData.dateOfBirth} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setPatientData({ ...patientData, dateOfBirth: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="gender">Gender</label>
+                    <select id="gender" value={patientData.gender} onChange={(e) => setPatientData({ ...patientData, gender: e.target.value })}>
+                      <option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="bloodGroup">Blood Group</label>
+                    <select id="bloodGroup" value={patientData.bloodGroup} onChange={(e) => setPatientData({ ...patientData, bloodGroup: e.target.value })}>
+                      {['Unknown', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((group) => <option key={group}>{group}</option>)}
+                    </select>
                   </div>
                 </>
               )}

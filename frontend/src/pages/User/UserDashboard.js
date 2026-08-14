@@ -80,9 +80,9 @@ export default function UserDashboard() {
           <Link to="/user/book-appointment" className="service-card glass-interactive">
             <span className="service-icon">01</span><h3>Book an appointment</h3><p>Select a doctor by specialization and view their contact information.</p><strong>Browse doctors →</strong>
           </Link>
-          <div className="service-card glass service-card-pending">
-            <span className="service-icon">02</span><span className="coming-badge">Coming soon</span><h3>Medical records</h3><p>Review visit summaries, test results and securely shared clinical documents.</p>
-          </div>
+          <Link to="/user/records" className="service-card glass-interactive">
+            <span className="service-icon">02</span><h3>Medical records</h3><p>Review test results and securely shared clinical documents.</p><strong>View records →</strong>
+          </Link>
           <div className="service-card glass service-card-pending">
             <span className="service-icon">03</span><span className="coming-badge">Coming soon</span><h3>Prescriptions</h3><p>Track current medicines, dosage instructions and prescription history.</p>
           </div>

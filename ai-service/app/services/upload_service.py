@@ -8,7 +8,7 @@ from app.rag.vectorstore import add_documents_to_store
 from app.utils.logger import logger
 from app.rag.bm25 import get_bm25_index
 
-async def handle_upload(file: UploadFile, document_id: str) -> dict:
+async def handle_upload(file: UploadFile, document_id: str, patient_id: str, document_type: str = "OTHER", record_date: str = "") -> dict:
     """
     Saves, parses, chunks, and indexes an uploaded PDF document.
     Returns:
@@ -38,7 +38,7 @@ async def handle_upload(file: UploadFile, document_id: str) -> dict:
         chunks = chunk_documents(pages, chunk_size=settings.chunk_size, chunk_overlap=settings.chunk_overlap)
 
         # 4. Enrich chunk metadata with document_id and pagination
-        enriched_chunks = enrich_chunk_metadata(chunks, document_id, filename)
+        enriched_chunks = enrich_chunk_metadata(chunks, document_id, filename, patient_id, document_type, record_date)
 
         # 4b. Prepare and persist BM25 index entries (text + metadata)
         try:
@@ -69,7 +69,8 @@ async def handle_upload(file: UploadFile, document_id: str) -> dict:
             "filename": filename,
             "total_pages": total_pages,
             "file_size": file_size,
-            "status": "success"
+            "status": "success",
+            "extraction_method": "TEXT"
         }
         
     except Exception as e:

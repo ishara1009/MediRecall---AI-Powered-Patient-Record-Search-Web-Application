@@ -5,7 +5,10 @@ from app.utils.logger import logger
 def enrich_chunk_metadata(
     chunks: List[Document], 
     document_id: str, 
-    filename: str
+    filename: str,
+    patient_id: str,
+    document_type: str = "OTHER",
+    record_date: str = ""
 ) -> List[Document]:
     """
     Standardizes and enriches the metadata of each chunk.
@@ -21,6 +24,9 @@ def enrich_chunk_metadata(
         # Attach identifier mapping to MongoDB
         chunk.metadata["document_id"] = document_id
         chunk.metadata["filename"] = filename
+        chunk.metadata["patient_id"] = patient_id
+        chunk.metadata["document_type"] = document_type
+        chunk.metadata["record_date"] = record_date
         
         # Clean 'source' metadata to be human-readable filname instead of absolute paths
         chunk.metadata["source"] = filename

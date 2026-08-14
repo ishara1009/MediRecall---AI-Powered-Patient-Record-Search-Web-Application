@@ -27,11 +27,17 @@ import SystemLogs from '../pages/Admin/SystemLogs';
 import DoctorDashboard from '../pages/Doctor/DoctorDashboard';
 import ChangePassword from '../pages/Doctor/ChangePassword';
 import PatientRecordSearch from '../pages/Doctor/PatientRecordSearch';
+import Patients from '../pages/Doctor/Patients';
+import PatientWorkspace from '../pages/Doctor/PatientWorkspace';
+import DoctorAppointments from '../pages/Doctor/DoctorAppointments';
+import DoctorAvailability from '../pages/Doctor/DoctorAvailability';
+import PDFViewer from '../pages/Doctor/PDFViewer';
 import UserDashboard from '../pages/User/UserDashboard';
 import DoctorDirectory from '../pages/User/DoctorDirectory';
 import BookAppointment from '../pages/User/BookAppointment';
 import Appointments from '../pages/User/Appointments';
 import DoctorProfile from '../pages/User/DoctorProfile';
+import MedicalRecords from '../pages/User/MedicalRecords';
 
 export default function AppRoutes() {
   const { adminExists, loading, user, token } = useContext(AuthContext);
@@ -159,6 +165,7 @@ export default function AppRoutes() {
       />
       <Route path="/user/appointments" element={<ProtectedRoute><RoleRoute allowedRole="User"><Appointments /></RoleRoute></ProtectedRoute>} />
       <Route path="/user/doctors/:doctorId" element={<ProtectedRoute><RoleRoute allowedRole="User"><DoctorProfile /></RoleRoute></ProtectedRoute>} />
+      <Route path="/user/records" element={<ProtectedRoute><RoleRoute allowedRole="User"><MedicalRecords /></RoleRoute></ProtectedRoute>} />
 
       {/* ─── Admin Routes ─────────────────────────────────────── */}
       <Route
@@ -253,6 +260,11 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/doctor/patients" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><Patients /></RoleRoute></ProtectedRoute>} />
+      <Route path="/doctor/patients/:patientId" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><PatientWorkspace /></RoleRoute></ProtectedRoute>} />
+      <Route path="/doctor/appointments" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><DoctorAppointments /></RoleRoute></ProtectedRoute>} />
+      <Route path="/doctor/availability" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><DoctorAvailability /></RoleRoute></ProtectedRoute>} />
+      <Route path="/doctor/documents/:id" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><PDFViewer /></RoleRoute></ProtectedRoute>} />
       {/* Doctor's RAG chat interface */}
       <Route
         path="/doctor/chat"

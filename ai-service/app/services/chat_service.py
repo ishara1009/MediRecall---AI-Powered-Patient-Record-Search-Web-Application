@@ -2,7 +2,7 @@ from app.rag.retriever import retrieve_relevant_contexts
 from app.rag.chain import get_rag_chain
 from app.utils.logger import logger
 
-def query_rag_pipeline(question: str, document_id: str = None) -> dict:
+def query_rag_pipeline(question: str, patient_id: str, document_id: str = None) -> dict:
     """
     Search related chunks inside ChromaDB vector store, execute RAG Chain, 
     and output structured citations and answers.
@@ -12,7 +12,7 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
         
         # 1. Retrieve matching contexts
         # Retrieve top 5 matching blocks
-        retrieved_docs = retrieve_relevant_contexts(question, k=5, document_id=document_id)
+        retrieved_docs = retrieve_relevant_contexts(question, k=5, patient_id=patient_id, document_id=document_id)
         
         if not retrieved_docs:
             logger.info("No documents found in vectorstore. Custom fallback triggered.")
@@ -39,6 +39,7 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
             if citation_key not in seen_citations:
                 seen_citations.add(citation_key)
                 sources_list.append({
+                    "document_id": doc.metadata.get("document_id"),
                     "filename": filename,
                     "page": page_num
                 })
@@ -60,17 +61,22 @@ def query_rag_pipeline(question: str, document_id: str = None) -> dict:
 
         answer_text = chain_response.answer
         confidence_val = chain_response.confidence_score
+        evidence_coverage = "Strong" if confidence_val >= 75 else "Moderate" if confidence_val >= 40 else "Limited"
 
         # Check if fallback triggered by prompt instructions
         if "I could not find enough information" in answer_text:
             # Override sources & confidence if fallback answer matches
             sources_list = []
             confidence_val = 0.0
+            evidence_coverage = "Insufficient"
 
         return {
             "question": question,
             "answer": answer_text,
             "confidence_score": confidence_val,
+            "evidence_coverage": evidence_coverage,
+            "retrieved_sources": len(retrieved_docs),
+            "documents_used": len({doc.metadata.get('document_id') for doc in retrieved_docs}),
             "sources": sources_list,
             "context_references": context_blocks if document_id else []
         }

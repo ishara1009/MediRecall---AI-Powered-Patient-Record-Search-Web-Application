@@ -29,7 +29,7 @@ export default function AnswerCard({ data }) {
             className="confidence-badge"
             style={{ borderColor: `${confidenceColor}40`, color: confidenceColor }}
           >
-            <span>Confidence: {Math.round(data.confidence_score)}%</span>
+            <span>Evidence: {data.evidence_coverage || 'Limited'}</span>
           </div>
           <button id="copy-answer-btn" className="copy-btn" onClick={handleCopy}>
             {copied ? 'Copied' : 'Copy'}
@@ -39,6 +39,7 @@ export default function AnswerCard({ data }) {
 
       <div className="answer-body">
         <p className="answer-text">{data.answer}</p>
+        <p className="ai-safety-note">AI-generated record summary. Review this information against the cited patient records before clinical use.</p>
       </div>
 
       <SourceCard sources={data.sources} />

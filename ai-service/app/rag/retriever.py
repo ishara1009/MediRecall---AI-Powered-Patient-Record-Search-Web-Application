@@ -5,7 +5,7 @@ from app.utils.logger import logger
 from app.rag.bm25 import get_bm25_index
 from langchain_core.documents import Document as LC_Document
 
-def retrieve_relevant_contexts(query: str, k: int = 5, document_id: str = None) -> List[Document]:
+def retrieve_relevant_contexts(query: str, k: int = 5, patient_id: str = None, document_id: str = None) -> List[Document]:
     """
     Query ChromaDB for relevant research paper chunks based on user question.
     """
@@ -14,14 +14,16 @@ def retrieve_relevant_contexts(query: str, k: int = 5, document_id: str = None) 
         vector_store = get_vector_store()
         
         # First: vector search
-        search_filter = {"document_id": document_id} if document_id else None
+        if not patient_id:
+            raise ValueError("A patient scope is required for clinical retrieval.")
+        search_filter = {"$and": [{"patient_id": patient_id}, {"document_id": document_id}]} if document_id else {"patient_id": patient_id}
         vector_results = vector_store.similarity_search(query, k=k, filter=search_filter)
 
         # Second: BM25 search
         bm25_results = []
         try:
             bm25_index = get_bm25_index()
-            bm25_hits = bm25_index.query(query, top_k=k, document_id=document_id)
+            bm25_hits = bm25_index.query(query, top_k=k, document_id=document_id, patient_id=patient_id)
             for hit in bm25_hits:
                 # Convert BM25 hit dicts into LangChain Document objects
                 doc = LC_Document(page_content=hit.get('text', ''), metadata=hit.get('metadata', {}))

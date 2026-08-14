@@ -60,7 +60,8 @@
 
 .patient-fields label { display: flex; flex-direction: column; gap: 7px; }
 .patient-fields label span { color: var(--text-muted); font-size: 12px; font-weight: 700; }
-.patient-fields input {
+.patient-fields input,
+.patient-fields select {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid var(--border-color);
@@ -70,7 +71,8 @@
   color: var(--text-main);
   font: inherit;
 }
-.patient-fields input:focus { border-color: var(--border-glow); }
+.patient-fields input:focus,
+.patient-fields select:focus { border-color: var(--border-glow); }
 .diseases-field { grid-column: 1 / -1; }
 
 @media (max-width: 600px) {

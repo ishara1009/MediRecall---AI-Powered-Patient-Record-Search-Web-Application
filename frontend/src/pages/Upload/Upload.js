@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { uploadDocuments } from '../../api/api';
+import React, { useEffect, useState, useRef } from 'react';
+import { getAdminPatients, uploadDocuments } from '../../api/api';
 import './Upload.css';
 
 export default function Upload() {
@@ -9,9 +9,14 @@ export default function Upload() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
-  const [patient, setPatient] = useState({ name: '', id: '', diseases: '', photo: null });
+  const [patients, setPatients] = useState([]);
+  const [patient, setPatient] = useState({ name: '', id: '', diseases: '', documentType: 'OTHER', recordDate: new Date().toISOString().slice(0, 10), photo: null });
   const fileInputRef = useRef(null);
   const photoInputRef = useRef(null);
+
+  useEffect(() => {
+    getAdminPatients().then((res) => { if (res.success) setPatients(res.data || []); }).catch(() => setError('Unable to load registered patients.'));
+  }, []);
 
   const addFiles = (newFiles) => {
     const pdfs = Array.from(newFiles).filter(f => f.type === 'application/pdf');
@@ -33,8 +38,8 @@ export default function Upload() {
   };
 
   const handleUpload = async () => {
-    if (!files.length || !patient.name.trim() || !patient.id.trim() || !patient.diseases.trim()) {
-      setError('Patient name, ID, diseases, and at least one PDF are required.');
+    if (!files.length || !patient.id.trim()) {
+      setError('Select a registered patient and add at least one PDF.');
       return;
     }
     setUploading(true);
@@ -47,7 +52,7 @@ export default function Upload() {
       });
       setResult(res);
       setFiles([]);
-      setPatient({ name: '', id: '', diseases: '', photo: null });
+      setPatient({ name: '', id: '', diseases: '', documentType: 'OTHER', recordDate: new Date().toISOString().slice(0, 10), photo: null });
     } catch (err) {
       setError(err.response?.data?.message || 'Upload failed. Is the backend running?');
     } finally {
@@ -84,15 +89,24 @@ export default function Upload() {
         </div>
         <div className="patient-fields">
           <label>
-            <span>Patient Name</span>
-            <input value={patient.name} onChange={(e) => setPatient(prev => ({ ...prev, name: e.target.value }))} placeholder="e.g. Nimal Perera" />
+            <span>Registered Patient</span>
+            <select value={patient.id} onChange={(e) => { const selected = patients.find((item) => item.patientId === e.target.value); setPatient(prev => ({ ...prev, id: e.target.value, name: selected?.fullName || '' })); }}>
+              <option value="">Select a patient</option>
+              {patients.map((item) => <option key={item._id} value={item.patientId}>{item.patientId} · {item.fullName}</option>)}
+            </select>
           </label>
           <label>
-            <span>Patient ID</span>
-            <input value={patient.id} onChange={(e) => setPatient(prev => ({ ...prev, id: e.target.value }))} placeholder="e.g. PAT-0001" />
+            <span>Document Type</span>
+            <select value={patient.documentType} onChange={(e) => setPatient(prev => ({ ...prev, documentType: e.target.value }))}>
+              {['LAB_REPORT','PRESCRIPTION','DISCHARGE_SUMMARY','CLINICAL_NOTE','RADIOLOGY_REPORT','REFERRAL','MEDICAL_CERTIFICATE','OTHER'].map((type) => <option key={type}>{type}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>Record Date</span>
+            <input type="date" value={patient.recordDate} onChange={(e) => setPatient(prev => ({ ...prev, recordDate: e.target.value }))} />
           </label>
           <label className="diseases-field">
-            <span>Diseases / Conditions</span>
+            <span>Conditions (optional)</span>
             <input value={patient.diseases} onChange={(e) => setPatient(prev => ({ ...prev, diseases: e.target.value }))} placeholder="e.g. Diabetes, Hypertension" />
           </label>
         </div>

@@ -1,8 +1,11 @@
 const fs = require('fs');
+const path = require('path');
+const mongoose = require('mongoose');
 const Document = require('../models/Document');
 const aiService = require('../services/aiService');
 const { sendSuccess, sendError } = require('../utils/response');
 const logger = require('../utils/logger');
+const Patient = require('../models/Patient');
 
 const updateDocumentPatient = async (req, res) => {
   const newPhoto = req.files?.patientPhoto?.[0];
@@ -14,13 +17,14 @@ const updateDocumentPatient = async (req, res) => {
   };
 
   try {
-    const patientName = req.body.patientName?.trim();
     const patientId = req.body.patientId?.trim();
     const diseases = (req.body.diseases || '').split(',').map(item => item.trim()).filter(Boolean);
-    if (!patientName || !patientId || diseases.length === 0) {
+    if (!patientId || diseases.length === 0) {
       cleanupNewFiles();
       return sendError(res, 'Patient name, ID, and at least one disease or condition are required', 400);
     }
+    const patient = await Patient.findOne({ patientId: patientId.toUpperCase() });
+    if (!patient) { cleanupNewFiles(); return sendError(res, 'Selected patient does not exist', 404); }
 
     const document = await Document.findById(req.params.id);
     if (!document) {
@@ -34,7 +38,7 @@ const updateDocumentPatient = async (req, res) => {
     if (newPdf) {
       try {
         await aiService.deleteDocument(document.customId);
-        const aiResult = await aiService.uploadDocument(newPdf.path, newPdf.originalname, document.customId);
+        const aiResult = await aiService.uploadDocument(newPdf.path, newPdf.originalname, document.customId, { patientId: patient.patientId, documentType: document.documentType, recordDate: document.recordDate?.toISOString().slice(0, 10) });
         document.filename = newPdf.originalname;
         document.fileSize = newPdf.size;
         document.totalPages = aiResult.total_pages || 0;
@@ -42,7 +46,7 @@ const updateDocumentPatient = async (req, res) => {
       } catch (replaceError) {
         try {
           if (oldPdfPath && fs.existsSync(oldPdfPath)) {
-            await aiService.uploadDocument(oldPdfPath, document.filename, document.customId);
+            await aiService.uploadDocument(oldPdfPath, document.filename, document.customId, { patientId: patient.patientId, documentType: document.documentType, recordDate: document.recordDate?.toISOString().slice(0, 10) });
           }
         } catch (restoreError) {
           logger.error(`Failed to restore old PDF index ${document.customId}`, restoreError.message);
@@ -52,8 +56,9 @@ const updateDocumentPatient = async (req, res) => {
       }
     }
 
-    document.patientName = patientName;
-    document.patientId = patientId;
+    document.patient = patient._id;
+    document.patientName = patient.fullName;
+    document.patientId = patient.patientId;
     document.diseases = diseases;
     if (newPhoto) document.patientPhoto = newPhoto.filename;
     const updated = await document.save();
@@ -93,18 +98,7 @@ const deleteDocument = async (req, res, next) => {
   const { id } = req.params;
   
   try {
-    // Find document by MongoDB ObjectId or CustomId
-    const doc = await Document.findOne({
-      $or: [
-        { _id: Object.isValidObjectId ? (mongoose.Types.ObjectId.isValid(id) ? id : null) : null },
-        { customId: id }
-      ].filter(cond => cond !== null)
-    });
-
-    // If mongoose.Types is not imported, let's just do a direct check or regular find
-    // To be perfectly robust without importing mongoose, let's find by Mongoose ID or customId
-    // Let's implement it carefully
-    let document = await Document.findById(id);
+    let document = mongoose.Types.ObjectId.isValid(id) ? await Document.findById(id) : null;
     if (!document) {
       document = await Document.findOne({ customId: id });
     }
@@ -143,6 +137,16 @@ const deleteDocument = async (req, res, next) => {
     logger.error(`Failed to delete document ${id}`, error.message);
     return sendError(res, 'Failed to delete document', 500, error.message);
   }
+};
+
+const viewDocument = async (req, res) => {
+  try {
+    const document = await Document.findOne({ customId: req.params.id });
+    if (!document || !document.filePath || !fs.existsSync(document.filePath)) return sendError(res, 'Document file not found', 404);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${path.basename(document.filename)}"`);
+    return res.sendFile(path.resolve(document.filePath));
+  } catch (error) { return sendError(res, 'Failed to open document', 500, error.message); }
 };
 
 /**
@@ -195,5 +199,6 @@ module.exports = {
   deleteDocument,
   rebuildDocumentEmbeddings,
   rebuildAllEmbeddings,
-  updateDocumentPatient
+  updateDocumentPatient,
+  viewDocument
 };

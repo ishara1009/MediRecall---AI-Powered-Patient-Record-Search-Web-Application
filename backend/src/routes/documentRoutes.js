@@ -6,6 +6,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 // List metadata (shared by Administrator and Doctor)
 router.get('/documents', protect, authorize(['Admin', 'Doctor']), documentController.getDocuments);
+router.get('/documents/:id/file', protect, authorize(['Admin', 'Doctor']), documentController.viewDocument);
 
 // Delete metadata + index (Admin only)
 router.delete('/documents/:id', protect, authorize('Admin'), documentController.deleteDocument);

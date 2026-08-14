@@ -99,6 +99,9 @@ export const logoutUser = async () => {
     return { success: true };
   }
 };
+export const getNotifications = async () => (await apiClient.get('/notifications')).data;
+export const markNotificationRead = async (id) => (await apiClient.patch(`/notifications/${id}/read`)).data;
+export const markAllNotificationsRead = async () => (await apiClient.patch('/notifications/read-all')).data;
 
 
 // ==========================================
@@ -209,6 +212,32 @@ export const getDoctorStats = async () => {
   const response = await apiClient.get('/doctor/stats');
   return response.data;
 };
+export const getDoctorAppointments = async () => (await apiClient.get('/doctor/appointments')).data;
+export const updateDoctorAppointmentStatus = async (id, status) => (await apiClient.patch(`/doctor/appointments/${id}/status`, { status })).data;
+export const getDoctorAvailability = async () => (await apiClient.get('/doctor/availability')).data;
+export const saveDoctorAvailability = async (schedule) => (await apiClient.put('/doctor/availability', { schedule })).data;
+export const addDoctorBlockedDate = async (payload) => (await apiClient.post('/doctor/availability/blocked-dates', payload)).data;
+export const deleteDoctorBlockedDate = async (id) => (await apiClient.delete(`/doctor/availability/blocked-dates/${id}`)).data;
+
+export const getDoctorPatients = async () => {
+  const response = await apiClient.get('/doctor/patients');
+  return response.data;
+};
+
+export const getAdminPatients = async () => {
+  const response = await apiClient.get('/admin/patients');
+  return response.data;
+};
+
+export const getPatientWorkspace = async (patientId) => {
+  const response = await apiClient.get(`/doctor/patients/${patientId}`);
+  return response.data;
+};
+
+export const addPatientCondition = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/conditions`, payload)).data;
+export const addPatientAllergy = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/allergies`, payload)).data;
+export const addPatientMedication = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/medications`, payload)).data;
+export const addPatientConsultation = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/consultations`, payload)).data;
 
 // Read-only physician directory for personal users
 export const getUserDoctors = async () => {
@@ -235,6 +264,10 @@ export const getMyAppointments = async () => {
   const response = await apiClient.get('/user/appointments');
   return response.data;
 };
+export const getMyMedicalRecords = async () => (await apiClient.get('/user/records')).data;
+export const getMyMedicalRecordPdf = async (id) => (await apiClient.get(`/user/records/${id}/file`, { responseType: 'blob' })).data;
+export const getMyPatientProfile = async () => (await apiClient.get('/user/patient-profile')).data;
+export const updateMyPatientProfile = async (payload) => (await apiClient.put('/user/patient-profile', payload)).data;
 
 export const cancelMyAppointment = async (id) => {
   const response = await apiClient.patch(`/user/appointments/${id}/cancel`);
@@ -255,6 +288,8 @@ export const uploadDocuments = async (files, patient, onUploadProgress) => {
   formData.append('patientName', patient.name);
   formData.append('patientId', patient.id);
   formData.append('diseases', patient.diseases);
+  formData.append('documentType', patient.documentType || 'OTHER');
+  formData.append('recordDate', patient.recordDate || new Date().toISOString().slice(0, 10));
   if (patient.photo) formData.append('patientPhoto', patient.photo);
   if (patient.pdf) formData.append('pdf', patient.pdf);
   const response = await apiClient.post('/upload', formData, {
@@ -265,10 +300,11 @@ export const uploadDocuments = async (files, patient, onUploadProgress) => {
 };
 
 // Query RAG chain (Doctor only)
-export const sendChatMessage = async (question, documentId) => {
+export const sendChatMessage = async (question, documentId, patientId) => {
   const response = await apiClient.post('/chat', {
     question,
-    documentId: documentId === 'all' ? null : documentId
+    documentId: documentId === 'all' ? null : documentId,
+    patientId
   });
   return response.data;
 };
@@ -278,6 +314,7 @@ export const getDocuments = async () => {
   const response = await apiClient.get('/documents');
   return response.data;
 };
+export const getDocumentPdf = async (id) => (await apiClient.get(`/documents/${id}/file`, { responseType: 'blob' })).data;
 
 // Delete metadata + index (Admin only)
 export const deleteDocument = async (id) => {
