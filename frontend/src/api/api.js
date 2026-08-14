@@ -45,6 +45,14 @@ export const setupAdmin = async (formData) => {
   return response.data;
 };
 
+// Register a regular person account
+export const signupUser = async (formData) => {
+  const response = await apiClient.post('/auth/signup', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return response.data;
+};
+
 // Perform login
 export const loginUser = async (email, password) => {
   const response = await apiClient.post('/auth/login', { email, password });

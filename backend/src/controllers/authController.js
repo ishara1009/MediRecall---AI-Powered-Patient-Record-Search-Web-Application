@@ -133,6 +133,62 @@ const setupAdmin = async (req, res) => {
 };
 
 /**
+ * Public registration for a regular person account.
+ */
+const signup = async (req, res) => {
+  try {
+    const { fullName, email, phoneNumber, password, confirmPassword } = req.body;
+
+    if (!fullName || !email || !phoneNumber || !password || !confirmPassword) {
+      return sendError(res, 'Name, email, phone number and both password fields are required', 400);
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return sendError(res, 'Invalid email address format', 400);
+    }
+    if (!isValidPhoneNumber(phoneNumber)) {
+      return sendError(res, 'Phone number must contain 7 to 15 digits', 400);
+    }
+    if (password !== confirmPassword) {
+      return sendError(res, 'Passwords do not match', 400);
+    }
+    const policyResult = validatePasswordPolicy(password);
+    if (policyResult) return sendError(res, policyResult, 400);
+
+    if (await User.exists({ email: normalizedEmail })) {
+      return sendError(res, 'An account with this email address already exists', 409);
+    }
+
+    // The existing schema uses employeeId as its unique internal account number.
+    let employeeId;
+    do {
+      employeeId = `USR-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    } while (await User.exists({ employeeId }));
+
+    const user = await User.create({
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      phoneNumber: phoneNumber.trim(),
+      employeeId,
+      password,
+      role: 'User',
+      status: 'active',
+      profilePicture: req.file ? `/uploads/${req.file.filename}` : '',
+      isFirstLogin: false
+    });
+
+    await logAuditEvent(req, user._id, user.fullName, user.role, 'USER_SIGNUP', 'A new personal account was registered.');
+    return sendSuccess(res, null, 'Account created successfully. You can now sign in.', 201);
+  } catch (error) {
+    if (error?.code === 11000) {
+      return sendError(res, 'An account with these details already exists', 409);
+    }
+    return sendError(res, 'Failed to create account', 500, error.message);
+  }
+};
+
+/**
  * Public User Login (Admin and Doctor combined)
  */
 const login = async (req, res) => {
@@ -439,6 +495,7 @@ const logout = async (req, res) => {
 module.exports = {
   setupStatus,
   setupAdmin,
+  signup,
   login,
   forgotPassword,
   getMe,

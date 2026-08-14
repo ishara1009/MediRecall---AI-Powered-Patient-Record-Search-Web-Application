@@ -35,7 +35,7 @@ export default function Navbar() {
   }, [showLogoutDialog, isSigningOut]);
 
   // Auth pages — show minimal navbar
-  const authPages = ['/login', '/forgot-password', '/setup'];
+  const authPages = ['/login', '/signup', '/forgot-password', '/setup'];
   const isAuthPage = authPages.includes(location.pathname);
 
   // Build nav links based on role
@@ -60,17 +60,22 @@ export default function Navbar() {
       ];
     }
 
+    if (user.role === 'User') {
+      return [{ path: '/user/dashboard', label: 'Dashboard' }];
+    }
+
     return [];
   };
 
   const navLinks = getNavLinks();
-  const profilePath = user?.role === 'Admin' ? '/admin/profile' : '/doctor/profile';
+  const profilePath = user?.role === 'Admin' ? '/admin/profile' : user?.role === 'Doctor' ? '/doctor/profile' : '/user/profile';
+  const dashboardPath = user?.role === 'Admin' ? '/admin/dashboard' : user?.role === 'Doctor' ? '/doctor/dashboard' : '/user/dashboard';
 
   return (
     <nav className="navbar">
       {/* Brand */}
       <div className="navbar-brand">
-        <Link to={isAuthenticated ? (user?.role === 'Admin' ? '/admin/dashboard' : '/doctor/dashboard') : '/login'} className="brand-link">
+        <Link to={isAuthenticated ? dashboardPath : '/login'} className="brand-link">
           <span className="brand-text">Medi<span className="brand-accent">Recall</span></span>
         </Link>
         {user && (

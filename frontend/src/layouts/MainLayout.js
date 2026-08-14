@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import './MainLayout.css';
 
-const AUTH_ROUTES = ['/login', '/setup', '/forgot-password'];
+const AUTH_ROUTES = ['/login', '/signup', '/setup', '/forgot-password'];
 
 export default function MainLayout({ children }) {
   const location = useLocation();

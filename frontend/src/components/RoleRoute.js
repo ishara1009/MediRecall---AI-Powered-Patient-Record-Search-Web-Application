@@ -19,6 +19,8 @@ export default function RoleRoute({ children, allowedRole }) {
     } else if (user.role === 'Doctor') {
       // If first login is still true, ProtectedRoute will intercept and redirect to change password
       return <Navigate to="/doctor/dashboard" replace />;
+    } else if (user.role === 'User') {
+      return <Navigate to="/user/dashboard" replace />;
     }
   }
 

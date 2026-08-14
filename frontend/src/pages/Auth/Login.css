@@ -87,6 +87,16 @@
   color: #f87171;
 }
 
+.login-success {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 9px;
+  padding: 11px 14px;
+  margin-bottom: 20px;
+  color: #6ee7b7;
+  font-size: 13px;
+}
+
 .login-alert-icon {
   display: flex;
   flex-shrink: 0;
@@ -270,6 +280,21 @@
   font-size: 12px;
   color: #374151;
 }
+
+.login-signup-note {
+  margin-bottom: 18px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.login-signup-note a {
+  color: #818cf8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-signup-note a:hover { text-decoration: underline; }
 
 .login-secure-note svg {
   width: 12px;

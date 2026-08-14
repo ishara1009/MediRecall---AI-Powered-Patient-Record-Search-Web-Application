@@ -5,7 +5,6 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import RoleRoute from '../components/RoleRoute';
 
 // Public pages (original)
-import Home from '../pages/Home/Home';
 import Upload from '../pages/Upload/Upload';
 import Chat from '../pages/Chat/Chat';
 import About from '../pages/About/About';
@@ -13,6 +12,7 @@ import Documents from '../pages/Documents/Documents';
 
 // Auth pages
 import Login from '../pages/Auth/Login';
+import Signup from '../pages/Auth/Signup';
 import SetupAdmin from '../pages/Auth/SetupAdmin';
 import ForgotPassword from '../pages/Auth/ForgotPassword';
 import Profile from '../pages/Auth/Profile';
@@ -27,6 +27,7 @@ import SystemLogs from '../pages/Admin/SystemLogs';
 import DoctorDashboard from '../pages/Doctor/DoctorDashboard';
 import ChangePassword from '../pages/Doctor/ChangePassword';
 import PatientRecordSearch from '../pages/Doctor/PatientRecordSearch';
+import UserDashboard from '../pages/User/UserDashboard';
 
 export default function AppRoutes() {
   const { adminExists, loading, user, token } = useContext(AuthContext);
@@ -41,6 +42,8 @@ export default function AppRoutes() {
     if (user.role === 'Doctor') {
       return user.isFirstLogin ? '/doctor/change-password' : '/doctor/dashboard';
     }
+
+    if (user.role === 'User') return '/user/dashboard';
 
     return '/login';
   };
@@ -85,6 +88,10 @@ export default function AppRoutes() {
             : <Login />
         }
       />
+      <Route
+        path="/signup"
+        element={user && token ? <Navigate to={getUserDashboardPath()} replace /> : <Signup />}
+      />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       {/* Setup admin is only accessible if no admin exists yet */}
       <Route
@@ -114,6 +121,23 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user/profile"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRole="User"><Profile /></RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/user/dashboard"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRole="User"><UserDashboard /></RoleRoute>
           </ProtectedRoute>
         }
       />

@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import './Login.css';
 
 export default function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +39,8 @@ export default function Login() {
           } else {
             navigate('/doctor/dashboard');
           }
+        } else if (role === 'User') {
+          navigate('/user/dashboard');
         }
       } else {
         setError(result.message || 'Invalid email or password.');
@@ -69,6 +72,9 @@ export default function Login() {
             <div className="login-alert">
               <span>{error}</span>
             </div>
+          )}
+          {!error && location.state?.message && (
+            <div className="login-success" role="status">{location.state.message}</div>
           )}
 
           <form onSubmit={handleSubmit} className="login-form" noValidate>
@@ -127,6 +133,10 @@ export default function Login() {
           </form>
 
           <div className="login-divider" />
+
+          <div className="login-signup-note">
+            New to MediRecall? <Link to="/signup">Create a personal account</Link>
+          </div>
 
           <div className="login-secure-note">
             Protected by TLS 1.3 &mdash; end-to-end encrypted session

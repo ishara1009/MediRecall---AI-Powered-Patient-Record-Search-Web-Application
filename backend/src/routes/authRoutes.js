@@ -10,6 +10,9 @@ router.get('/setup-status', authController.setupStatus);
 // First admin setup
 router.post('/setup-admin', uploadImage.single('profilePicture'), authController.setupAdmin);
 
+// Public registration for people using MediRecall
+router.post('/signup', uploadImage.single('profilePicture'), authController.signup);
+
 // Standard Login
 router.post('/login', authController.login);
 

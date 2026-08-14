@@ -1,0 +1,25 @@
+.signup-page { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background: #07090f radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,.16), transparent 60%); }
+.signup-wrap { width: min(100%, 650px); }
+.signup-brand { display: block; margin-bottom: 24px; text-align: center; color: #f1f5f9; font: 800 22px 'Outfit', sans-serif; text-decoration: none; }
+.signup-brand span, .signup-login a { color: #818cf8; }
+.signup-card { padding: 34px; background: #0f1221; border: 1px solid rgba(255,255,255,.07); border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,.45); }
+.signup-card header { margin-bottom: 24px; }
+.signup-card h1 { font-size: 24px; color: #f1f5f9; }
+.signup-card header p, .password-hint { margin-top: 5px; color: #6b7280; font-size: 13px; }
+.signup-form { display: flex; flex-direction: column; gap: 18px; }
+.avatar-picker { display: flex; align-items: center; gap: 13px; padding: 12px; border: 1px dashed rgba(129,140,248,.35); border-radius: 12px; cursor: pointer; }
+.avatar-picker > span, .avatar-picker img { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; object-fit: cover; background: #6366f1; color: white; font-size: 22px; }
+.avatar-picker div { display: flex; flex-direction: column; color: #dbeafe; font-size: 13px; }
+.avatar-picker small { color: #6b7280; margin-top: 3px; }
+.avatar-picker input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.signup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.signup-grid label { display: flex; flex-direction: column; gap: 6px; }
+.signup-grid label > span { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+.signup-grid input { width: 100%; padding: 12px 13px; background: #080b14; border: 1px solid rgba(255,255,255,.08); border-radius: 9px; color: #e2e8f0; font: inherit; outline: none; }
+.signup-grid input:focus { border-color: rgba(99,102,241,.55); box-shadow: 0 0 0 3px rgba(99,102,241,.08); }
+.signup-grid .wide { grid-column: 1 / -1; }
+.show-passwords { display: flex; align-items: center; gap: 8px; color: #9ca3af; font-size: 12px; }
+.password-hint { margin-top: -10px; line-height: 1.5; }
+.signup-login { margin-top: 22px; text-align: center; color: #6b7280; font-size: 13px; }
+.signup-login a { text-decoration: none; font-weight: 600; }
+@media (max-width: 600px) { .signup-card { padding: 25px 20px; } .signup-grid { grid-template-columns: 1fr; } .signup-grid .wide { grid-column: auto; } }
