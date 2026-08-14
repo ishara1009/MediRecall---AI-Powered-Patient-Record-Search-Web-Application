@@ -143,7 +143,6 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="login-footer">© 2026 MediRecall. All rights reserved.</p>
       </div>
     </div>
   );

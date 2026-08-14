@@ -5,9 +5,14 @@
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
-  background-color: #f4f7fb;
+  background-color: #172033;
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+    linear-gradient(110deg, rgba(14, 24, 43, 0.82), rgba(36, 43, 92, 0.56)),
+    url("../../images/hospital images/6.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .login-wrap {
@@ -36,24 +41,25 @@
   font-family: 'Outfit', sans-serif;
   font-size: 20px;
   font-weight: 800;
-  color: #172033;
+  color: #ffffff;
   letter-spacing: -0.03em;
 }
 
 .login-logo-accent {
-  color: #818cf8;
+  color: #a9a5ff;
 }
 
 /* ─── Card ─── */
 .login-card {
   width: 100%;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid #dfe5ef;
   border-radius: 16px;
   padding: 36px 32px 28px;
   box-shadow:
     0 0 0 1px rgba(99, 102, 241, 0.04),
-    0 24px 48px rgba(15, 23, 42, 0.1);
+    0 24px 55px rgba(6, 13, 28, 0.32);
+  backdrop-filter: blur(10px);
 }
 
 .login-card-header {
@@ -306,12 +312,17 @@
 /* ─── Footer ─── */
 .login-footer {
   font-size: 12px;
-  color: #7b8798;
+  color: rgba(255, 255, 255, 0.88);
   text-align: center;
 }
 
 /* ─── Responsive ─── */
 @media (max-width: 480px) {
+  .login-page {
+    background-attachment: scroll;
+    background-position: 52% center;
+  }
+
   .login-card {
     padding: 28px 20px 24px;
   }
