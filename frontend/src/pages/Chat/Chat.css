@@ -5,9 +5,9 @@
   overflow: hidden;
   position: relative;
   background:
-    radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.11), transparent 30%),
-    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08), transparent 32%),
-    linear-gradient(180deg, rgba(11, 8, 22, 0.96), rgba(8, 6, 16, 0.99));
+    radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.08), transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.05), transparent 32%),
+    linear-gradient(180deg, #f8faff, #f3f6fb);
 }
 
 .chat-page::before {
@@ -15,8 +15,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.14;
-  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  opacity: 0.35;
+  background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -26,11 +26,11 @@
   justify-content: space-between;
   padding: 16px 28px;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(10, 7, 18, 0.78);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(18px);
   position: relative;
   z-index: 2;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, .16);
+  box-shadow: 0 5px 20px rgba(15, 23, 42, .05);
   flex-shrink: 0;
 }
 
@@ -95,6 +95,7 @@
   font-size: 16px;
   font-weight: 700;
   font-family: 'Outfit', sans-serif;
+  color: #172033;
 }
 
 .chat-title::before { content: '✦'; color: #8b5cf6; margin-right: 9px; filter: drop-shadow(0 0 7px rgba(139,92,246,.8)); }
@@ -123,8 +124,8 @@
 
 .clear-chat-btn:hover:not(:disabled) {
   border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  background: rgba(239, 68, 68, .08);
+  color: #b91c1c;
+  background: #fef2f2;
   transform: translateY(-1px);
 }
 
@@ -136,7 +137,7 @@
 .chat-input-area {
   padding: 18px 28px 20px;
   border-top: 1px solid var(--border-color);
-  background: rgba(10, 7, 18, 0.82);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(18px);
   flex-shrink: 0;
   position: relative;

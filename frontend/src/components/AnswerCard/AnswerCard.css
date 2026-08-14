@@ -1,10 +1,10 @@
 .answer-card {
-  background: linear-gradient(145deg, rgba(22, 17, 37, .92), rgba(14, 11, 25, .9));
+  background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 20px;
   animation: fadeIn 0.4s ease;
-  box-shadow: 0 18px 50px rgba(0,0,0,.22), inset 0 1px rgba(255,255,255,.035);
+  box-shadow: 0 12px 34px rgba(15,23,42,.08);
   position: relative;
   overflow: hidden;
 }
@@ -42,11 +42,11 @@
   padding: 4px 10px;
   border-radius: 20px;
   border: 1px solid;
-  background: rgba(0, 0, 0, 0.2);
+  background: #f8fafc;
 }
 
 .copy-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: #f8fafc;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   padding: 4px 12px;
@@ -57,7 +57,7 @@
 }
 
 .copy-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #eef2ff;
   color: var(--text-main);
   transform: translateY(-1px);
 }
@@ -106,7 +106,7 @@
 .context-item {
   display: flex;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #f8fafc;
   border-radius: var(--radius-sm);
   padding: 10px;
   border-left: 3px solid var(--primary);
