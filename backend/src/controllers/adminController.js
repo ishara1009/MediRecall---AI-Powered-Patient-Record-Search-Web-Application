@@ -5,6 +5,7 @@ const ChatHistory = require('../models/ChatHistory');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAuditEvent } = require('../utils/auditLogger');
 const bcrypt = require('bcryptjs');
+const Department = require('../models/Department');
 
 const normalizePhoneNumber = (phoneNumber = '') => String(phoneNumber).replace(/[\s()-]/g, '').replace(/^\+/, '');
 
@@ -20,6 +21,11 @@ const createDoctor = async (req, res) => {
     employeeId,
     department,
     doctorInformation,
+    departmentRef,
+    specialization,
+    floor,
+    roomNumber,
+    clinicLocation,
     email,
     phoneNumber,
     temporaryPassword
@@ -82,12 +88,19 @@ const createDoctor = async (req, res) => {
       profilePicture = `/uploads/${req.file.filename}`;
     }
 
+    const selectedDepartment = departmentRef ? await Department.findOne({ _id: departmentRef, status: 'Active' }) : await Department.findOne({ name: { $regex: `^${String(department).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' }, status: 'Active' });
+
     // 3. Create Doctor, default: isFirstLogin is true
     const doctor = new User({
       fullName,
       medicalLicenseNumber,
       employeeId: normalizedDoctorId,
       department,
+      departmentRef: selectedDepartment?._id || null,
+      specialization: specialization || department,
+      floor: floor || '',
+      roomNumber: roomNumber || '',
+      clinicLocation: clinicLocation || '',
       doctorInformation: doctorInformation ? doctorInformation.trim() : '',
       email,
       phoneNumber,
@@ -135,7 +148,7 @@ const getDoctors = async (req, res) => {
  */
 const updateDoctor = async (req, res) => {
   const { id } = req.params;
-  const { fullName, medicalLicenseNumber, department, doctorInformation, email, phoneNumber } = req.body;
+  const { fullName, medicalLicenseNumber, department, departmentRef, specialization, floor, roomNumber, clinicLocation, doctorInformation, email, phoneNumber } = req.body;
 
   try {
     const doctor = await User.findOne({ _id: id, role: 'Doctor' });
@@ -166,7 +179,12 @@ const updateDoctor = async (req, res) => {
     }
 
     if (fullName) doctor.fullName = fullName;
-    if (department) doctor.department = department;
+    if (department) { doctor.department = department; const matched = await Department.findOne({ name: { $regex: `^${String(department).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' }, status: 'Active' }); doctor.departmentRef = matched?._id || null; }
+    if (departmentRef !== undefined) doctor.departmentRef = departmentRef || null;
+    if (specialization !== undefined) doctor.specialization = specialization.trim();
+    if (floor !== undefined) doctor.floor = floor.trim();
+    if (roomNumber !== undefined) doctor.roomNumber = roomNumber.trim();
+    if (clinicLocation !== undefined) doctor.clinicLocation = clinicLocation.trim();
     if (doctorInformation !== undefined) doctor.doctorInformation = doctorInformation.trim();
     
     if (phoneNumber) {

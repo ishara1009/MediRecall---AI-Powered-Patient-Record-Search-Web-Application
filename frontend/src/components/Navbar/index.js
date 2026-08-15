@@ -58,6 +58,7 @@ export default function Navbar() {
         { path: '/admin/patients', label: 'Records' },
         { path: '/admin/upload', label: 'Upload PDF' },
         { path: '/admin/logs', label: 'Audit Logs' },
+        { path: '/admin/operations', label: 'Hospital' },
       ];
     }
 
@@ -66,6 +67,7 @@ export default function Navbar() {
         { path: '/doctor/dashboard', label: 'Dashboard' },
         { path: '/doctor/patients', label: 'Patients' },
         { path: '/doctor/appointments', label: 'Appointments' },
+        { path: '/doctor/leave', label: 'Leave' },
         { path: '/doctor/search', label: 'Search Records' },
         { path: '/doctor/chat', label: 'AI Consult' },
       ];

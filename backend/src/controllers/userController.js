@@ -4,15 +4,18 @@ const { ensurePatientForUser } = require('../services/patientService');
 const Document = require('../models/Document');
 const fs = require('fs');
 const path = require('path');
+const { getAvailabilitySummary } = require('../services/availabilityService');
+const doctorFields = 'employeeId fullName email phoneNumber department departmentRef specialization floor roomNumber clinicLocation doctorInformation medicalLicenseNumber profilePicture status';
 
 /** Read-only physician directory for registered personal users. */
 const getDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({ role: 'Doctor' })
-      .select('employeeId fullName email phoneNumber department doctorInformation medicalLicenseNumber profilePicture status')
+    const doctors = await User.find({ role: 'Doctor', status: 'active' })
+      .select(doctorFields)
       .sort({ fullName: 1 })
       .lean();
-    return sendSuccess(res, doctors, 'Doctor directory retrieved successfully');
+    const data = await Promise.all(doctors.map(async (doctor) => ({ ...doctor, availability: await getAvailabilitySummary(doctor) })));
+    return sendSuccess(res, data, 'Doctor directory retrieved successfully');
   } catch (error) {
     return sendError(res, 'Failed to fetch the doctor directory', 500, error.message);
   }
@@ -20,11 +23,11 @@ const getDoctors = async (req, res) => {
 
 const getDoctor = async (req, res) => {
   try {
-    const doctor = await User.findOne({ role: 'Doctor', employeeId: req.params.doctorId.toUpperCase() })
-      .select('employeeId fullName email phoneNumber department doctorInformation medicalLicenseNumber profilePicture status')
+    const doctor = await User.findOne({ role: 'Doctor', status: 'active', employeeId: req.params.doctorId.toUpperCase() })
+      .select(doctorFields)
       .lean();
     if (!doctor) return sendError(res, 'Doctor profile not found', 404);
-    return sendSuccess(res, doctor, 'Doctor profile retrieved successfully');
+    return sendSuccess(res, { ...doctor, availability: await getAvailabilitySummary(doctor) }, 'Doctor profile retrieved successfully');
   } catch (error) {
     return sendError(res, 'Failed to fetch doctor profile', 500, error.message);
   }

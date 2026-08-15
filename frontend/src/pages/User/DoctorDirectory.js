@@ -48,13 +48,16 @@ export default function DoctorDirectory() {
             <article className="doctor-directory-card glass" key={doctor._id}>
               <div className="doctor-directory-top">
                 {doctor.profilePicture ? <img src={`${BACKEND_URL}${doctor.profilePicture}`} alt={doctor.fullName} /> : <div className="directory-avatar">{doctor.fullName?.slice(0, 2).toUpperCase()}</div>}
-                <div><h2>{doctor.fullName}</h2><p>{doctor.department}</p><StatusBadge status={doctor.status} /></div>
+                <div><h2>{doctor.fullName}</h2><p>{doctor.specialization || doctor.department}</p><StatusBadge status={doctor.availability?.status || doctor.status} /></div>
               </div>
               <dl>
                 <div><dt>Doctor ID</dt><dd>{doctor.employeeId}</dd></div>
                 <div><dt>Email</dt><dd><a href={`mailto:${doctor.email}`}>{doctor.email}</a></dd></div>
                 <div><dt>Phone Number</dt><dd><a href={`tel:${doctor.phoneNumber}`}>{doctor.phoneNumber}</a></dd></div>
                 <div><dt>Medical License No.</dt><dd>{doctor.medicalLicenseNumber}</dd></div>
+                <div><dt>Department</dt><dd>{doctor.department}</dd></div>
+                <div><dt>Availability</dt><dd>{doctor.availability?.nextAvailable ? `Next: ${doctor.availability.nextAvailable}` : doctor.availability?.leaveUntil ? `On leave until ${doctor.availability.leaveUntil}` : doctor.availability?.status || 'Unavailable'}</dd></div>
+                <div><dt>Clinic</dt><dd>{[doctor.clinicLocation, doctor.floor && `Floor ${doctor.floor}`, doctor.roomNumber && `Room ${doctor.roomNumber}`].filter(Boolean).join(' · ') || 'Contact hospital'}</dd></div>
               </dl>
               {doctor.doctorInformation && (
                 <div className="doctor-information"><h3>Doctor Information</h3><p>{doctor.doctorInformation}</p></div>

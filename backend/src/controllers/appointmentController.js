@@ -4,9 +4,8 @@ const Counter = require('../models/Counter');
 const User = require('../models/User');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAuditEvent } = require('../utils/auditLogger');
-const DoctorAvailability = require('../models/DoctorAvailability');
-const DoctorBlockedDate = require('../models/DoctorBlockedDate');
 const { createNotification } = require('../services/notificationService');
+const { getScheduleSlots } = require('../services/availabilityService');
 
 const isValidDate = (date) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return false;
@@ -16,21 +15,8 @@ const isValidDate = (date) => {
 
 const todayString = () => new Date().toISOString().slice(0, 10);
 
-const toDisplayTime = (minutes) => {
-  const hour24 = Math.floor(minutes / 60); const minute = minutes % 60;
-  const suffix = hour24 >= 12 ? 'PM' : 'AM'; const hour12 = hour24 % 12 || 12;
-  return `${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${suffix}`;
-};
-const minutesFor = (time) => { const [hour, minute] = time.split(':').map(Number); return hour * 60 + minute; };
 const getGeneratedSlots = async (doctorId, date) => {
-  if (await DoctorBlockedDate.exists({ doctor: doctorId, date })) return [];
-  const day = new Date(`${date}T00:00:00.000Z`).getUTCDay();
-  let schedule = await DoctorAvailability.findOne({ doctor: doctorId, dayOfWeek: day }).lean();
-  if (!schedule) schedule = { startTime: '09:00', endTime: '17:00', slotDuration: 30, isAvailable: day >= 1 && day <= 5 };
-  if (!schedule.isAvailable) return [];
-  const slots = []; const start = minutesFor(schedule.startTime); const end = minutesFor(schedule.endTime);
-  for (let value = start; value + schedule.slotDuration <= end; value += schedule.slotDuration) slots.push(toDisplayTime(value));
-  return slots;
+  return (await getScheduleSlots(doctorId, date)).slots;
 };
 
 const serializeAppointment = (appointment) => ({

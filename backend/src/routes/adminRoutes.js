@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/auth');
 const uploadImage = require('../middleware/uploadImage');
 const patientController = require('../controllers/patientController');
+const organizationController = require('../controllers/organizationController');
 
 // Apply protection globally to all admin routes
 router.use(protect);
@@ -23,5 +24,12 @@ router.get('/stats', adminController.getStats);
 // View system logs
 router.get('/logs', adminController.getLogs);
 router.get('/patients', patientController.listPatients);
+router.get('/departments', organizationController.listDepartments);
+router.post('/departments', organizationController.createDepartment);
+router.patch('/departments/:id', organizationController.updateDepartment);
+router.get('/departments/:id/doctors', organizationController.departmentDoctors);
+router.get('/doctor-leaves', organizationController.listLeaves);
+router.patch('/doctor-leaves/:id/review', organizationController.reviewLeave);
+router.get('/doctor-availability', organizationController.adminAvailability);
 
 module.exports = router;

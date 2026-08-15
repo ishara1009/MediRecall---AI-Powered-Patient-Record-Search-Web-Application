@@ -24,6 +24,7 @@ export default function DoctorManagement() {
     phoneNumber: '',
     medicalLicenseNumber: '',
     department: '',
+    specialization: '', floor: '', roomNumber: '', clinicLocation: '',
     doctorInformation: ''
   });
   const [editFile, setEditFile] = useState(null);
@@ -97,6 +98,7 @@ export default function DoctorManagement() {
       phoneNumber: doctor.phoneNumber || '',
       medicalLicenseNumber: doctor.medicalLicenseNumber || '',
       department: doctor.department || '',
+      specialization: doctor.specialization || '', floor: doctor.floor || '', roomNumber: doctor.roomNumber || '', clinicLocation: doctor.clinicLocation || '',
       doctorInformation: doctor.doctorInformation || ''
     });
     setEditPreviewUrl(doctor.profilePicture ? `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}${doctor.profilePicture}` : '');
@@ -128,6 +130,10 @@ export default function DoctorManagement() {
       formData.append('phoneNumber', editForm.phoneNumber.trim());
       formData.append('medicalLicenseNumber', editForm.medicalLicenseNumber.trim());
       formData.append('department', editForm.department.trim());
+      formData.append('specialization', editForm.specialization.trim());
+      formData.append('floor', editForm.floor.trim());
+      formData.append('roomNumber', editForm.roomNumber.trim());
+      formData.append('clinicLocation', editForm.clinicLocation.trim());
       formData.append('doctorInformation', editForm.doctorInformation.trim());
       if (editFile) {
         formData.append('profilePicture', editFile);
@@ -340,7 +346,7 @@ export default function DoctorManagement() {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Specialization</label>
+                  <label>Department</label>
                   <input
                     type="text"
                     value={editForm.department}
@@ -348,6 +354,10 @@ export default function DoctorManagement() {
                     required
                   />
                 </div>
+                <div className="form-group"><label>Specialization</label><input value={editForm.specialization} onChange={(e) => setEditForm({ ...editForm, specialization: e.target.value })} /></div>
+                <div className="form-group"><label>Clinic Location</label><input value={editForm.clinicLocation} onChange={(e) => setEditForm({ ...editForm, clinicLocation: e.target.value })} /></div>
+                <div className="form-group"><label>Floor</label><input value={editForm.floor} onChange={(e) => setEditForm({ ...editForm, floor: e.target.value })} /></div>
+                <div className="form-group"><label>Room Number</label><input value={editForm.roomNumber} onChange={(e) => setEditForm({ ...editForm, roomNumber: e.target.value })} /></div>
                 <div className="form-group modal-wide-field">
                   <label>Doctor Information</label>
                   <textarea

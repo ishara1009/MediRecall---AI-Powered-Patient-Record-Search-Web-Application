@@ -4,6 +4,7 @@ const doctorController = require('../controllers/doctorController');
 const patientController = require('../controllers/patientController');
 const doctorAppointmentController = require('../controllers/doctorAppointmentController');
 const { protect, authorize } = require('../middleware/auth');
+const organizationController = require('../controllers/organizationController');
 
 // Apply protection globally to all Doctor routes
 router.use(protect);
@@ -40,5 +41,8 @@ router.get('/availability', doctorAppointmentController.getAvailability);
 router.put('/availability', doctorAppointmentController.saveAvailability);
 router.post('/availability/blocked-dates', doctorAppointmentController.addBlockedDate);
 router.delete('/availability/blocked-dates/:id', doctorAppointmentController.deleteBlockedDate);
+router.get('/leave', organizationController.myLeaves);
+router.post('/leave', organizationController.requestLeave);
+router.patch('/leave/:id/cancel', organizationController.cancelLeave);
 
 module.exports = router;

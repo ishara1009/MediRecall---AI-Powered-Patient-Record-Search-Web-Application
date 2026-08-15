@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const { sendSuccess, sendError } = require('../utils/response');
+const { getAvailabilitySummary } = require('../services/availabilityService');
 
-const publicDoctorFields = 'employeeId fullName department doctorInformation medicalLicenseNumber profilePicture status';
+const publicDoctorFields = 'employeeId fullName department departmentRef specialization floor roomNumber clinicLocation doctorInformation medicalLicenseNumber profilePicture status';
 
 const getDoctors = async (req, res) => {
   try {
@@ -9,7 +10,8 @@ const getDoctors = async (req, res) => {
       .select(publicDoctorFields)
       .sort({ fullName: 1 })
       .lean();
-    return sendSuccess(res, doctors, 'Healthcare professionals retrieved successfully');
+    const data = await Promise.all(doctors.map(async (doctor) => ({ ...doctor, availability: await getAvailabilitySummary(doctor) })));
+    return sendSuccess(res, data, 'Healthcare professionals retrieved successfully');
   } catch (error) {
     return sendError(res, 'Unable to retrieve healthcare professionals', 500, error.message);
   }
@@ -21,7 +23,7 @@ const getDoctor = async (req, res) => {
       .select(publicDoctorFields)
       .lean();
     if (!doctor) return sendError(res, 'Healthcare professional not found', 404);
-    return sendSuccess(res, doctor, 'Healthcare professional retrieved successfully');
+    return sendSuccess(res, { ...doctor, availability: await getAvailabilitySummary(doctor) }, 'Healthcare professional retrieved successfully');
   } catch (error) {
     return sendError(res, 'Unable to retrieve healthcare professional', 500, error.message);
   }

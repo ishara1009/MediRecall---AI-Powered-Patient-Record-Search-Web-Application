@@ -13,6 +13,10 @@ export default function CreateDoctor() {
     employeeId: '',
     medicalLicenseNumber: '',
     department: '',
+    specialization: '',
+    floor: '',
+    roomNumber: '',
+    clinicLocation: '',
     doctorInformation: '',
     temporaryPassword: ''
   });
@@ -67,7 +71,7 @@ export default function CreateDoctor() {
     setSuccess('');
     setLoading(true);
 
-    const { fullName, email, phoneNumber, employeeId, medicalLicenseNumber, department, doctorInformation, temporaryPassword } = formData;
+    const { fullName, email, phoneNumber, employeeId, medicalLicenseNumber, department, specialization, floor, roomNumber, clinicLocation, doctorInformation, temporaryPassword } = formData;
 
     // Standard client checks
     if (!fullName || !email || !phoneNumber || !employeeId || !medicalLicenseNumber || !department || !temporaryPassword) {
@@ -90,6 +94,10 @@ export default function CreateDoctor() {
       data.append('employeeId', employeeId.trim().toUpperCase());
       data.append('medicalLicenseNumber', medicalLicenseNumber.trim());
       data.append('department', department.trim());
+      data.append('specialization', specialization.trim());
+      data.append('floor', floor.trim());
+      data.append('roomNumber', roomNumber.trim());
+      data.append('clinicLocation', clinicLocation.trim());
       data.append('doctorInformation', doctorInformation.trim());
       data.append('temporaryPassword', temporaryPassword);
       if (profilePicture) {
@@ -216,17 +224,22 @@ export default function CreateDoctor() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="department">Specialization</label>
+              <label htmlFor="department">Department</label>
               <input
                 type="text"
                 id="department"
                 name="department"
                 value={formData.department}
                 onChange={handleInputChange}
-                placeholder="e.g. Cardiologist"
+                placeholder="e.g. Cardiology"
                 required
               />
             </div>
+
+            <div className="form-group"><label htmlFor="specialization">Specialization</label><input id="specialization" name="specialization" value={formData.specialization} onChange={handleInputChange} placeholder="e.g. Interventional Cardiology" /></div>
+            <div className="form-group"><label htmlFor="clinicLocation">Clinic Location</label><input id="clinicLocation" name="clinicLocation" value={formData.clinicLocation} onChange={handleInputChange} placeholder="e.g. Main Outpatient Clinic" /></div>
+            <div className="form-group"><label htmlFor="floor">Floor</label><input id="floor" name="floor" value={formData.floor} onChange={handleInputChange} placeholder="e.g. 2" /></div>
+            <div className="form-group"><label htmlFor="roomNumber">Room Number</label><input id="roomNumber" name="roomNumber" value={formData.roomNumber} onChange={handleInputChange} placeholder="e.g. C-204" /></div>
 
             <div className="form-group pwd-group">
               <label htmlFor="doctorInformation">Doctor Information</label>

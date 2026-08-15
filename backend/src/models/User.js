@@ -69,6 +69,11 @@ const UserSchema = new mongoose.Schema({
     ],
     trim: true
   },
+  departmentRef: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', default: null, index: true },
+  specialization: { type: String, trim: true, maxlength: 200, default: '' },
+  floor: { type: String, trim: true, maxlength: 50, default: '' },
+  roomNumber: { type: String, trim: true, maxlength: 50, default: '' },
+  clinicLocation: { type: String, trim: true, maxlength: 200, default: '' },
   doctorInformation: {
     type: String,
     trim: true,

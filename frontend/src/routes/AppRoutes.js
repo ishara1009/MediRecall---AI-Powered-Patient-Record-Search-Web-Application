@@ -22,6 +22,7 @@ import AdminDashboard from '../pages/Admin/AdminDashboard';
 import CreateDoctor from '../pages/Admin/CreateDoctor';
 import DoctorManagement from '../pages/Admin/DoctorManagement';
 import SystemLogs from '../pages/Admin/SystemLogs';
+import HospitalOperations from '../pages/Admin/HospitalOperations';
 
 // Doctor pages
 import DoctorDashboard from '../pages/Doctor/DoctorDashboard';
@@ -31,6 +32,7 @@ import Patients from '../pages/Doctor/Patients';
 import PatientWorkspace from '../pages/Doctor/PatientWorkspaceView';
 import DoctorAppointments from '../pages/Doctor/DoctorAppointments';
 import DoctorAvailability from '../pages/Doctor/DoctorAvailability';
+import DoctorLeave from '../pages/Doctor/DoctorLeave';
 import PDFViewer from '../pages/Doctor/PDFViewer';
 import UserDashboard from '../pages/User/UserDashboard';
 import DoctorDirectory from '../pages/User/DoctorDirectory';
@@ -209,6 +211,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/admin/operations" element={<ProtectedRoute><RoleRoute allowedRole="Admin"><HospitalOperations /></RoleRoute></ProtectedRoute>} />
       {/* Admin patient records management (uses existing Documents page) */}
       <Route
         path="/admin/patients"
@@ -265,6 +268,7 @@ export default function AppRoutes() {
       <Route path="/doctor/patients/:patientId" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><PatientWorkspace /></RoleRoute></ProtectedRoute>} />
       <Route path="/doctor/appointments" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><DoctorAppointments /></RoleRoute></ProtectedRoute>} />
       <Route path="/doctor/availability" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><DoctorAvailability /></RoleRoute></ProtectedRoute>} />
+      <Route path="/doctor/leave" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><DoctorLeave /></RoleRoute></ProtectedRoute>} />
       <Route path="/doctor/documents/:id" element={<ProtectedRoute><RoleRoute allowedRole="Doctor"><PDFViewer /></RoleRoute></ProtectedRoute>} />
       {/* Doctor's RAG chat interface */}
       <Route

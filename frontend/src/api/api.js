@@ -156,6 +156,13 @@ export const getAdminStats = async () => {
   const response = await apiClient.get('/admin/stats');
   return response.data;
 };
+export const getAdminDepartments = async () => (await apiClient.get('/admin/departments')).data;
+export const createDepartment = async (payload) => (await apiClient.post('/admin/departments', payload)).data;
+export const updateDepartment = async (id, payload) => (await apiClient.patch(`/admin/departments/${id}`, payload)).data;
+export const getDepartmentDoctors = async (id) => (await apiClient.get(`/admin/departments/${id}/doctors`)).data;
+export const getAdminDoctorLeaves = async () => (await apiClient.get('/admin/doctor-leaves')).data;
+export const reviewDoctorLeave = async (id, payload) => (await apiClient.patch(`/admin/doctor-leaves/${id}/review`, payload)).data;
+export const getAdminDoctorAvailability = async () => (await apiClient.get('/admin/doctor-availability')).data;
 
 // Retrieve system logs
 export const getSystemLogs = async () => {
@@ -221,6 +228,9 @@ export const getDoctorAvailability = async () => (await apiClient.get('/doctor/a
 export const saveDoctorAvailability = async (schedule) => (await apiClient.put('/doctor/availability', { schedule })).data;
 export const addDoctorBlockedDate = async (payload) => (await apiClient.post('/doctor/availability/blocked-dates', payload)).data;
 export const deleteDoctorBlockedDate = async (id) => (await apiClient.delete(`/doctor/availability/blocked-dates/${id}`)).data;
+export const getMyDoctorLeaves = async () => (await apiClient.get('/doctor/leave')).data;
+export const requestDoctorLeave = async (payload) => (await apiClient.post('/doctor/leave', payload)).data;
+export const cancelDoctorLeave = async (id) => (await apiClient.patch(`/doctor/leave/${id}/cancel`)).data;
 
 export const getDoctorPatients = async () => {
   const response = await apiClient.get('/doctor/patients');
