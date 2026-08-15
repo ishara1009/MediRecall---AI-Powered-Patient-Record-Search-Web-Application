@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import './UI.css';
+import './AvailabilityStatus.css';
 
 export function PageHeader({ eyebrow, title, description, action }) {
   return <header className="ui-page-header"><div>{eyebrow && <span className="ui-eyebrow">{eyebrow}</span>}<h1>{title}</h1>{description && <p>{description}</p>}</div>{action && <div className="ui-page-action">{action}</div>}</header>;
 }
 
 export function StatusBadge({ status }) {
-  return <span className={`ui-status ui-status--${String(status || '').toLowerCase()}`}><span aria-hidden="true" />{status}</span>;
+  const statusClass = String(status || '').toLowerCase().trim().replace(/\s+/g, '-');
+  return <span className={`ui-status ui-status--${statusClass}`}><span aria-hidden="true" />{status}</span>;
 }
 
 export function EmptyState({ title, message, action, symbol = '+' }) {

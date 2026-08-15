@@ -67,6 +67,7 @@ export default function Navbar() {
         { path: '/doctor/dashboard', label: 'Dashboard' },
         { path: '/doctor/patients', label: 'Patients' },
         { path: '/doctor/appointments', label: 'Appointments' },
+        { path: '/doctor/availability', label: 'Availability' },
         { path: '/doctor/leave', label: 'Leave' },
         { path: '/doctor/search', label: 'Search Records' },
         { path: '/doctor/chat', label: 'AI Consult' },
