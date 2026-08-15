@@ -28,7 +28,7 @@ import DoctorDashboard from '../pages/Doctor/DoctorDashboard';
 import ChangePassword from '../pages/Doctor/ChangePassword';
 import PatientRecordSearch from '../pages/Doctor/PatientRecordSearch';
 import Patients from '../pages/Doctor/Patients';
-import PatientWorkspace from '../pages/Doctor/PatientWorkspace';
+import PatientWorkspace from '../pages/Doctor/PatientWorkspaceView';
 import DoctorAppointments from '../pages/Doctor/DoctorAppointments';
 import DoctorAvailability from '../pages/Doctor/DoctorAvailability';
 import PDFViewer from '../pages/Doctor/PDFViewer';
@@ -38,6 +38,7 @@ import BookAppointment from '../pages/User/BookAppointment';
 import Appointments from '../pages/User/Appointments';
 import DoctorProfile from '../pages/User/DoctorProfile';
 import MedicalRecords from '../pages/User/MedicalRecords';
+import Notifications from '../pages/Notifications/Notifications';
 import Home from '../pages/Home/Home';
 import PublicLayout from '../components/Public/PublicLayout';
 import Features from '../pages/PublicPages/Features';
@@ -117,6 +118,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route
         path="/doctor/profile"
         element={

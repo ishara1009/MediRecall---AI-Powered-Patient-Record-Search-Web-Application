@@ -238,9 +238,15 @@ export const getPatientWorkspace = async (patientId) => {
 };
 
 export const addPatientCondition = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/conditions`, payload)).data;
+export const updatePatientCondition = async (patientId, id, payload) => (await apiClient.patch(`/doctor/patients/${patientId}/conditions/${id}`, payload)).data;
 export const addPatientAllergy = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/allergies`, payload)).data;
+export const updatePatientAllergy = async (patientId, id, payload) => (await apiClient.patch(`/doctor/patients/${patientId}/allergies/${id}`, payload)).data;
 export const addPatientMedication = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/medications`, payload)).data;
+export const updatePatientMedication = async (patientId, id, payload) => (await apiClient.patch(`/doctor/patients/${patientId}/medications/${id}`, payload)).data;
 export const addPatientConsultation = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/consultations`, payload)).data;
+export const updatePatientConsultation = async (patientId, id, payload) => (await apiClient.patch(`/doctor/patients/${patientId}/consultations/${id}`, payload)).data;
+export const addPatientLabResult = async (patientId, payload) => (await apiClient.post(`/doctor/patients/${patientId}/lab-results`, payload)).data;
+export const updatePatientLabResult = async (patientId, id, payload) => (await apiClient.patch(`/doctor/patients/${patientId}/lab-results/${id}`, payload)).data;
 
 // Read-only physician directory for personal users
 export const getUserDoctors = async () => {
