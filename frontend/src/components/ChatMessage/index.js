@@ -2,11 +2,11 @@ import React from 'react';
 import AnswerCard from '../AnswerCard';
 import './ChatMessage.css';
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, index = 0 }) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`chat-message ${isUser ? 'user-message' : 'ai-message'}`}>
+    <div className={`chat-message ${isUser ? 'user-message' : 'ai-message'}`} style={{ '--message-index': index }}>
       {isUser ? (
         <div className="user-bubble">
           <p className="user-text">{message.content}</p>

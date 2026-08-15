@@ -1,6 +1,7 @@
 .chat-message {
   width: 100%;
-  animation: message-enter 0.42s cubic-bezier(.2,.8,.2,1) both;
+  animation: message-enter 0.58s cubic-bezier(.16,1,.3,1) both;
+  animation-delay: min(calc(var(--message-index, 0) * 18ms), 120ms);
 }
 
 .user-message {
@@ -15,6 +16,7 @@
   max-width: 70%;
   border: 1px solid rgba(255,255,255,.12);
   box-shadow: 0 10px 28px rgba(79, 70, 229, .22), inset 0 1px rgba(255,255,255,.12);
+  animation: user-bubble-settle .7s cubic-bezier(.16,1,.3,1) both;
 }
 
 .user-text {
@@ -52,6 +54,12 @@
 }
 
 @keyframes message-enter {
-  from { opacity: 0; transform: translateY(12px) scale(.99); }
+  from { opacity: 0; transform: translateY(20px) scale(.975); filter: blur(5px); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes user-bubble-settle {
+  0% { transform: translateX(20px) scale(.94); }
+  65% { transform: translateX(-2px) scale(1.012); }
+  100% { transform: none; }
 }

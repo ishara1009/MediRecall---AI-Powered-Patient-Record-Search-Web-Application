@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
 import './MainLayout.css';
 
 const AUTH_ROUTES = ['/login', '/signup', '/setup', '/forgot-password'];
@@ -31,7 +30,6 @@ export default function MainLayout({ children }) {
           {children}
         </main>
       </div>
-      {!isChatPage && <Footer />}
     </div>
   );
 }

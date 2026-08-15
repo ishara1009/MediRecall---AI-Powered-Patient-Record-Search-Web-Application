@@ -31,7 +31,7 @@ export default function ChatBox({ messages, isLoading }) {
     <div className="chatbox" id="chat-message-list">
       <div className="chatbox-messages">
         {messages.map((msg, i) => (
-          <ChatMessage key={i} message={msg} />
+          <ChatMessage key={i} message={msg} index={i} />
         ))}
         {isLoading && <TypingIndicator />}
         <div ref={bottomRef} />
