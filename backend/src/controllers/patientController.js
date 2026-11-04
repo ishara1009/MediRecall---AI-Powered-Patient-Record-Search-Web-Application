@@ -174,4 +174,28 @@ const updateMedication = updateClinicalRecord(Medication, ['medicationName', 'do
 const updateConsultation = updateClinicalRecord(Consultation, ['consultationDate', 'chiefComplaint', 'symptoms', 'clinicalFindings', 'assessment', 'treatmentPlan', 'followUpInstructions'], 'Consultation', 'CONSULTATION_UPDATED');
 const updateLabResult = updateClinicalRecord(LabResult, ['testName', 'value', 'unit', 'referenceRange', 'status', 'testDate'], 'LabResult', 'LAB_RESULT_UPDATED');
 
-module.exports = { listPatients, getPatientWorkspace, addCondition, updateCondition, addAllergy, updateAllergy, addMedication, updateMedication, addConsultation, updateConsultation, addLabResult, updateLabResult };
+const deleteClinicalRecord = (Model, label, idField, auditAction) => async (req, res) => {
+  try {
+    const patient = await resolvePatient(req.params.patientId);
+    if (!patient) return sendError(res, 'Patient not found', 404);
+    const record = await Model.findOneAndDelete({ _id: req.params.id, patient: patient._id });
+    if (!record) return sendError(res, `${label} not found`, 404);
+    await logAuditEvent(req, req.user._id, req.user.fullName, req.user.role, auditAction, `Deleted ${record[idField] || record._id} for ${patient.patientId}.`);
+    return sendSuccess(res, null, `${label} deleted successfully`);
+  } catch (error) { return sendError(res, `Failed to delete ${label.toLowerCase()}`, 500, error.message); }
+};
+
+const deleteCondition = deleteClinicalRecord(Condition, 'Condition', 'conditionId', 'CONDITION_DELETED');
+const deleteAllergy = deleteClinicalRecord(Allergy, 'Allergy', 'allergyId', 'ALLERGY_DELETED');
+const deleteMedication = deleteClinicalRecord(Medication, 'Medication', 'medicationId', 'MEDICATION_DELETED');
+const deleteConsultation = deleteClinicalRecord(Consultation, 'Consultation', 'consultationId', 'CONSULTATION_DELETED');
+const deleteLabResult = deleteClinicalRecord(LabResult, 'Lab result', 'labResultId', 'LAB_RESULT_DELETED');
+
+module.exports = {
+  listPatients, getPatientWorkspace,
+  addCondition, updateCondition, deleteCondition,
+  addAllergy, updateAllergy, deleteAllergy,
+  addMedication, updateMedication, deleteMedication,
+  addConsultation, updateConsultation, deleteConsultation,
+  addLabResult, updateLabResult, deleteLabResult
+};

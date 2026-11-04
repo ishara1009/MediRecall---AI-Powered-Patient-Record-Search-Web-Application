@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   addPatientAllergy, addPatientCondition, addPatientConsultation, addPatientLabResult,
-  addPatientMedication, getPatientWorkspace, updatePatientAllergy, updatePatientCondition,
-  updatePatientConsultation, updatePatientLabResult, updatePatientMedication
+  addPatientMedication, deletePatientAllergy, deletePatientCondition, deletePatientConsultation,
+  deletePatientLabResult, deletePatientMedication, getPatientWorkspace, updatePatientAllergy,
+  updatePatientCondition, updatePatientConsultation, updatePatientLabResult, updatePatientMedication
 } from '../../api/api';
 import { EmptyState, Skeleton, StatusBadge } from '../../components/UI';
 import './PatientWorkspace.css';
 import './PatientWorkspacePhase1.css';
+import './PatientWorkspaceDelete.css';
 
 const TABS = ['Overview', 'Conditions', 'Allergies', 'Medications', 'Appointments', 'Consultations', 'Lab Results', 'Medical Records', 'Timeline', 'AI Assistant'];
 const FORMS = {
@@ -28,7 +30,9 @@ const STATUS_OPTIONS = {
 };
 const CREATE = { Conditions: addPatientCondition, Allergies: addPatientAllergy, Medications: addPatientMedication, Consultations: addPatientConsultation, 'Lab Results': addPatientLabResult };
 const UPDATE = { Conditions: updatePatientCondition, Allergies: updatePatientAllergy, Medications: updatePatientMedication, Consultations: updatePatientConsultation, 'Lab Results': updatePatientLabResult };
+const DELETE = { Conditions: deletePatientCondition, Allergies: deletePatientAllergy, Medications: deletePatientMedication, Consultations: deletePatientConsultation, 'Lab Results': deletePatientLabResult };
 const TITLES = { Conditions: 'conditionName', Allergies: 'allergen', Medications: 'medicationName', Consultations: 'chiefComplaint', 'Lab Results': 'testName' };
+const SINGULAR = { Conditions: 'Condition', Allergies: 'Allergy', Medications: 'Medication', Consultations: 'Consultation', 'Lab Results': 'Lab result' };
 
 const formatDate = (value) => value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Not recorded';
 const dateInput = (value) => value ? new Date(value).toISOString().slice(0, 10) : '';
@@ -49,7 +53,7 @@ function ClinicalForm({ tab, value, documents, saving, onChange, onCancel, onSub
   </form>;
 }
 
-function RecordCard({ tab, item, onEdit }) {
+function RecordCard({ tab, item, onEdit, onDelete, deleting }) {
   const title = item[TITLES[tab]];
   return <article className={`clinical-record-card ${tab === 'Allergies' && item.status === 'Active' ? 'clinical-record-warning' : ''}`}>
     <div className="clinical-record-title"><div><small>{item.conditionId || item.allergyId || item.medicationId || item.consultationId || item.labResultId}</small><h3>{title}</h3></div>{item.status && <StatusBadge status={item.status} />}</div>
@@ -58,7 +62,10 @@ function RecordCard({ tab, item, onEdit }) {
     {tab === 'Medications' && <dl><div><dt>Dose</dt><dd>{item.dosage}</dd></div><div><dt>Frequency</dt><dd>{item.frequency}</dd></div><div><dt>Route</dt><dd>{item.route || 'Not recorded'}</dd></div><div><dt>Period</dt><dd>{formatDate(item.startDate)} – {item.endDate ? formatDate(item.endDate) : 'Ongoing'}</dd></div><div className="record-detail-wide"><dt>Instructions</dt><dd>{item.instructions || 'No instructions recorded'}</dd></div></dl>}
     {tab === 'Consultations' && <dl><div><dt>Date</dt><dd>{formatDate(item.consultationDate)}</dd></div><div><dt>Doctor</dt><dd>{item.doctor?.fullName || 'Authorized clinician'}</dd></div>{['symptoms', 'clinicalFindings', 'assessment', 'treatmentPlan', 'followUpInstructions'].map((key) => <div className="record-detail-wide" key={key}><dt>{labelFor(key)}</dt><dd>{item[key] || 'Not recorded'}</dd></div>)}</dl>}
     {tab === 'Lab Results' && <dl><div><dt>Result</dt><dd className="lab-value">{item.value} {item.unit}</dd></div><div><dt>Reference range</dt><dd>{item.referenceRange || 'Not provided'}</dd></div><div><dt>Test date</dt><dd>{formatDate(item.testDate)}</dd></div><div><dt>Source</dt><dd>{item.sourceDocument?.filename || 'Manually verified result'}</dd></div></dl>}
-    <button className="clinical-edit-button" onClick={() => onEdit(item)}>Edit record</button>
+    <div className="clinical-record-actions">
+      <button type="button" className="clinical-edit-button" onClick={() => onEdit(item)} disabled={deleting}>Edit record</button>
+      <button type="button" className="clinical-delete-button" onClick={() => onDelete(item)} disabled={deleting}>{deleting ? 'Deleting…' : 'Delete record'}</button>
+    </div>
   </article>;
 }
 
@@ -79,7 +86,7 @@ function LabTrends({ results }) {
 export default function PatientWorkspaceView() {
   const { patientId } = useParams();
   const [data, setData] = useState(null); const [tab, setTab] = useState('Overview'); const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(''); const [success, setSuccess] = useState(''); const [form, setForm] = useState(null); const [saving, setSaving] = useState(false); const [timelineFilter, setTimelineFilter] = useState('All');
+  const [error, setError] = useState(''); const [success, setSuccess] = useState(''); const [form, setForm] = useState(null); const [saving, setSaving] = useState(false); const [deletingId, setDeletingId] = useState(null); const [timelineFilter, setTimelineFilter] = useState('All');
   const load = useCallback(async () => { setLoading(true); setError(''); try { const response = await getPatientWorkspace(patientId); if (response.success) setData(response.data); } catch (requestError) { setError(requestError.response?.data?.message || 'Unable to load the patient workspace.'); } finally { setLoading(false); } }, [patientId]);
   useEffect(() => { load(); }, [load]);
   const filteredTimeline = useMemo(() => (data?.timeline || []).filter((item) => timelineFilter === 'All' || ({ Appointments: 'APPOINTMENT', Documents: 'DOCUMENT', Clinical: ['CONDITION', 'ALLERGY', 'CONSULTATION'], Medication: 'MEDICATION', 'Lab Results': 'LAB_RESULT' }[timelineFilter]?.includes?.(item.type) || ({ Appointments: 'APPOINTMENT', Documents: 'DOCUMENT', Medication: 'MEDICATION', 'Lab Results': 'LAB_RESULT' }[timelineFilter] === item.type))), [data, timelineFilter]);
@@ -90,6 +97,19 @@ export default function PatientWorkspaceView() {
   const lists = { Conditions: conditions, Allergies: allergies, Medications: medications, Appointments: appointments, Consultations: consultations, 'Lab Results': labResults, 'Medical Records': documents, Timeline: filteredTimeline };
   const editRecord = (item) => { const template = FORMS[tab]; const payload = Object.fromEntries(Object.keys(template).map((key) => [key, key.toLowerCase().includes('date') ? dateInput(item[key]) : (item[key]?._id || item[key] || '')])); setForm({ ...payload, _id: item._id }); window.scrollTo({ top: 240, behavior: 'smooth' }); };
   const submit = async (event) => { event.preventDefault(); setSaving(true); setError(''); setSuccess(''); try { const id = form._id; const payload = Object.fromEntries(Object.entries(form).filter(([key]) => key !== '_id')); await (id ? UPDATE[tab](patientId, id, payload) : CREATE[tab](patientId, payload)); setForm(null); setSuccess(`${tab.slice(0, -1)} ${id ? 'updated' : 'recorded'} successfully.`); await load(); } catch (requestError) { setError(requestError.response?.data?.message || 'Unable to save the clinical record.'); } finally { setSaving(false); } };
+  const deleteRecord = async (item) => {
+    const label = SINGULAR[tab];
+    const title = item[TITLES[tab]] || 'this record';
+    if (!window.confirm(`Delete ${label.toLowerCase()} “${title}”? This action cannot be undone.`)) return;
+    setDeletingId(item._id); setError(''); setSuccess('');
+    try {
+      await DELETE[tab](patientId, item._id);
+      if (form?._id === item._id) setForm(null);
+      setSuccess(`${label} deleted successfully.`);
+      await load();
+    } catch (requestError) { setError(requestError.response?.data?.message || 'Unable to delete the clinical record.'); }
+    finally { setDeletingId(null); }
+  };
   const activeAllergies = allergies.filter((item) => item.status === 'Active'); const activeConditions = conditions.filter((item) => ['Active', 'Chronic'].includes(item.status)); const activeMedications = medications.filter((item) => item.status === 'Active');
 
   return <main className="patient-workspace fade-in">
@@ -104,7 +124,7 @@ export default function PatientWorkspaceView() {
     {!['Overview', 'AI Assistant'].includes(tab) && <section className="clinical-record-section"><div className="clinical-section-head"><div><h2>{tab}</h2><p>Verified records associated with {patient.fullName}.</p></div>{FORMS[tab] && <button onClick={() => setForm({ ...FORMS[tab] })}>+ Add {tab === 'Lab Results' ? 'Lab Result' : tab.slice(0, -1)}</button>}</div>
       {form && <ClinicalForm tab={tab} value={form} documents={documents} saving={saving} onChange={(key, value) => setForm((current) => ({ ...current, [key]: value }))} onCancel={() => setForm(null)} onSubmit={submit} />}
       {tab === 'Timeline' && <div className="timeline-filters" aria-label="Timeline filters">{['All', 'Appointments', 'Documents', 'Clinical', 'Medication', 'Lab Results'].map((filter) => <button className={timelineFilter === filter ? 'active' : ''} onClick={() => setTimelineFilter(filter)} key={filter}>{filter}</button>)}</div>}
-      {!lists[tab]?.length ? <EmptyState title={`No ${tab.toLowerCase()} recorded`} message="Verified information will appear here when it is added." /> : tab === 'Timeline' ? <div className="patient-timeline">{lists[tab].map((item, index) => <article key={`${item.type}-${item.date}-${index}`}><span className={`timeline-marker type-${item.type.toLowerCase()}`} aria-hidden="true"></span><div><small>{formatDate(item.date)} · {item.type.replace('_', ' ')}</small><h3>{item.title}</h3><p>{item.detail}</p></div></article>)}</div> : ['Conditions', 'Allergies', 'Medications', 'Consultations', 'Lab Results'].includes(tab) ? <div className="clinical-record-grid">{lists[tab].map((item) => <RecordCard tab={tab} item={item} onEdit={editRecord} key={item._id} />)}</div> : <div className="clinical-record-list">{lists[tab].map((item) => <article key={item._id}><div><strong>{item.filename || item.appointmentId}</strong>{item.status && <StatusBadge status={item.status} />}</div><p>{item.documentType || item.reasonForVisit}</p><small>{formatDate(recordDate(item))}</small></article>)}</div>}
+      {!lists[tab]?.length ? <EmptyState title={`No ${tab.toLowerCase()} recorded`} message="Verified information will appear here when it is added." /> : tab === 'Timeline' ? <div className="patient-timeline">{lists[tab].map((item, index) => <article key={`${item.type}-${item.date}-${index}`}><span className={`timeline-marker type-${item.type.toLowerCase()}`} aria-hidden="true"></span><div><small>{formatDate(item.date)} · {item.type.replace('_', ' ')}</small><h3>{item.title}</h3><p>{item.detail}</p></div></article>)}</div> : ['Conditions', 'Allergies', 'Medications', 'Consultations', 'Lab Results'].includes(tab) ? <div className="clinical-record-grid">{lists[tab].map((item) => <RecordCard tab={tab} item={item} onEdit={editRecord} onDelete={deleteRecord} deleting={deletingId === item._id} key={item._id} />)}</div> : <div className="clinical-record-list">{lists[tab].map((item) => <article key={item._id}><div><strong>{item.filename || item.appointmentId}</strong>{item.status && <StatusBadge status={item.status} />}</div><p>{item.documentType || item.reasonForVisit}</p><small>{formatDate(recordDate(item))}</small></article>)}</div>}
     </section>}
   </main>;
 }
